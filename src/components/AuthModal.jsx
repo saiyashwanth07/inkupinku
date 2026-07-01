@@ -397,7 +397,7 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
             </div>
             <div style={{ fontSize: "0.75rem", color: "#94a3b8", textAlign: "center", marginTop: "16px" }}>
               {!isFirebaseConfigured() ? (
-                <span>Simulated Mode: Test with any 10-digit number and code <strong>123456</strong>. Admin: 9999999999</span>
+                <span>Simulated Mode (Vite debug: Key is {import.meta.env.VITE_FIREBASE_API_KEY ? "Present" : "Missing"})</span>
               ) : (
                 <span>Secured by Google Firebase Authentication.</span>
               )}
