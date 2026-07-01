@@ -1027,3 +1027,28 @@ export const saveFavoritesSync = async (email, favList) => {
     }
   }
 };
+
+export const getUserProfile = async (uid, defaultPhone) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const docSnap = await getDoc(doc(fbDb, "users", uid));
+      if (docSnap.exists()) {
+        const d = docSnap.data();
+        return {
+          uid: docSnap.id,
+          id: docSnap.id,
+          name: d.fullName,
+          email: d.email || "",
+          phoneNumber: d.phoneNumber || defaultPhone,
+          role: d.role || "student"
+        };
+      }
+    } catch (err) {
+      console.warn("Firestore getUserProfile failed:", err);
+    }
+  }
+
+  // Fallback to local DB search
+  const usersList = await getUsers();
+  return usersList.find(u => u.uid === uid || u.id === uid || u.phoneNumber === defaultPhone || u.phone === defaultPhone);
+};

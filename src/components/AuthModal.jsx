@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Phone, User, Eye, AlertCircle, ArrowRight, ShieldCheck } from "lucide-react";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth, isFirebaseConfigured } from "../utils/firebase";
-import { getUsers, saveUsers } from "../utils/db";
+import { getUsers, saveUsers, getUserProfile } from "../utils/db";
 
 export default function AuthModal({ onClose, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState("login"); // "login" | "register"
@@ -112,23 +112,7 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
       }
       const verifier = window.recaptchaVerifier;
 
-      // Check registration requirements
-      const usersList = await getUsers();
-      const userExists = usersList.some(
-        u => (u.phoneNumber === formattedMobile || u.phone === formattedMobile)
-      );
-
-      if (activeTab === "login" && !userExists) {
-        setAuthError("Mobile number is not registered. Please create an account first.");
-        setIsLoading(false);
-        return;
-      }
-
-      if (activeTab === "register" && userExists) {
-        setAuthError("Mobile number is already registered. Please Sign In.");
-        setIsLoading(false);
-        return;
-      }
+      // Proceed directly to send OTP. The backend auth flow will naturally handle existing vs new users securely.
 
       const confirmation = await signInWithPhoneNumber(auth, formattedMobile, verifier);
       setConfirmationResult(confirmation);
@@ -222,10 +206,8 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
       const result = await confirmationResult.confirm(otp);
       const fbUser = result.user;
       
-      const usersList = await getUsers();
-      let activeUser = usersList.find(
-        u => u.id === fbUser.uid || u.uid === fbUser.uid
-      );
+      let activeUser = await getUserProfile(fbUser.uid, fbUser.phoneNumber);
+      const usersList = await getUsers(); // Fallback for saveUsers array management
 
       if (!activeUser) {
         // Create Firestore profile
