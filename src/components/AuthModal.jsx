@@ -21,27 +21,9 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
   const formattedMobile = mobile.trim().startsWith("+") ? mobile.trim() : `+91${mobile.trim()}`;
   const isTestNumber = formattedMobile === "+919848575599" || formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
 
-  // Initialize invisible recaptcha
+  // Cleanup verifier on unmount
   useEffect(() => {
-    if (isFirebaseConfigured() && step === "input") {
-      try {
-        if (!window.recaptchaVerifier) {
-          window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-            size: "invisible",
-            callback: () => {
-              // reCAPTCHA solved
-            },
-            "expired-callback": () => {
-              setAuthError("reCAPTCHA expired. Please try again.");
-            }
-          });
-        }
-      } catch (err) {
-        console.error("reCAPTCHA init error: ", err);
-      }
-    }
     return () => {
-      // Clean up verifier
       if (window.recaptchaVerifier) {
         try {
           window.recaptchaVerifier.clear();
@@ -49,7 +31,7 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
         } catch (e) {}
       }
     };
-  }, [step]);
+  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -87,8 +69,8 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
     setAuthError("");
     setIsLoading(true);
 
-    // Handle Mock SMS Fallback if Firebase is not configured OR if using a test number
-    if (!isFirebaseConfigured() || isTestNumber) {
+    // Handle Mock SMS Fallback ONLY if Firebase is not configured
+    if (!isFirebaseConfigured()) {
       setTimeout(async () => {
         // Look up registered users for login check
         const users = await getUsers();
@@ -110,17 +92,25 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
 
         setIsLoading(false);
         setStep("otp");
-        // Simulated transition (no intrusive browser alert)
       }, 800);
       return;
     }
 
     // Live Firebase Phone Auth
     try {
-      const verifier = window.recaptchaVerifier;
-      if (!verifier) {
-        throw new Error("reCAPTCHA verifier is not initialized");
+      // Dynamically initialize reCAPTCHA verifier to prevent verifier is not initialized errors
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "invisible",
+          callback: () => {
+            // reCAPTCHA solved
+          },
+          "expired-callback": () => {
+            setAuthError("reCAPTCHA expired. Please try again.");
+          }
+        });
       }
+      const verifier = window.recaptchaVerifier;
 
       // Check registration requirements
       const usersList = await getUsers();
@@ -170,12 +160,11 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
     setAuthError("");
     setIsLoading(true);
 
-    // Mock SMS Verification
-    if (!isFirebaseConfigured() || isTestNumber) {
+    // Mock SMS Verification ONLY if Firebase is not configured
+    if (!isFirebaseConfigured()) {
       setTimeout(async () => {
-        const expectedOtp = formattedMobile === "+919848575599" ? "559999" : "123456";
-        if (otp !== expectedOtp) {
-          setAuthError(`Invalid OTP code. Please enter ${expectedOtp}.`);
+        if (otp !== "123456") {
+          setAuthError("Invalid OTP code. Please enter 123456.");
           setIsLoading(false);
           return;
         }
