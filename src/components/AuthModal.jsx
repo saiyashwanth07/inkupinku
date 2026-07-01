@@ -335,9 +335,6 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
                 {errors.mobile && <span className="error-msg">{errors.mobile}</span>}
               </div>
 
-              {/* Invisible Google reCAPTCHA Mount anchor */}
-              <div id="recaptcha-container"></div>
-
               <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "12px", marginTop: "8px" }} disabled={isLoading}>
                 {isLoading ? "Requesting SMS..." : "Send Verification OTP"}
               </button>
@@ -406,6 +403,9 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
               )}
             </div>
           </div>
+
+          {/* Invisible Google reCAPTCHA Mount anchor (always mounted to prevent element loss on step transitions) */}
+          <div id="recaptcha-container"></div>
 
         </div>
       </div>
