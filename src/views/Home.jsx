@@ -6,6 +6,22 @@ import FeaturedUniversityCard from "../components/FeaturedUniversityCard";
 import { predictColleges, getRecommendationsForProfile } from "../utils/predictor";
 import { getColleges, getRecommendations } from "../utils/db";
 
+const DISTRICT_MAP = {
+  'ATP': 'Anantapur',
+  'CTR': 'Chittoor',
+  'EG': 'East Godavari',
+  'GTR': 'Guntur',
+  'KDP': 'Kadapa',
+  'KNL': 'Kurnool',
+  'KRI': 'Krishna',
+  'NLR': 'Nellore',
+  'PKS': 'Prakasam',
+  'SKL': 'Srikakulam',
+  'VSP': 'Visakhapatnam',
+  'VZM': 'Vizianagaram',
+  'WG': 'West Godavari'
+};
+
 const AP_DISTRICTS = [
   "Anakapalli",
   "Anantapur",
@@ -212,7 +228,7 @@ export default function Home({
   const [selectedBranch, setSelectedBranch] = useState("All Branches");
   const [selectedType, setSelectedType] = useState("All");
   const [selectedChance, setSelectedChance] = useState("All");
-  const [sortBy, setSortBy] = useState("best_match");
+  const [sortBy, setSortBy] = useState("lowest_rank");
 
   // Load database datasets on mount
   useEffect(() => {
@@ -392,7 +408,7 @@ export default function Home({
     setSelectedBranch("All Branches");
     setSelectedType("All");
     setSelectedChance("All");
-    setSortBy("best_match");
+    setSortBy("lowest_rank");
   };
 
   const userRank = inputType === "rank" ? (Number(inputValue) || 0) : estimateRankFromMarks(Number(inputValue) || 0);
@@ -414,7 +430,10 @@ export default function Home({
 
     // 2. District Filter
     if (selectedDistrict && selectedDistrict !== "All" && selectedDistrict !== "All Districts") {
-      results = results.filter(c => c.district.toLowerCase() === selectedDistrict.toLowerCase());
+      results = results.filter(c => {
+        const fullDistrict = DISTRICT_MAP[c.district] || c.district;
+        return fullDistrict.toLowerCase() === selectedDistrict.toLowerCase();
+      });
     }
 
     // 3. College Management Type Filter
@@ -620,7 +639,7 @@ export default function Home({
                   <div className="filter-section-modern">
                     <SearchableSelect
                       label="District"
-                      options={["All Districts", ...availableDistricts]}
+                      options={["All Districts", ...availableDistricts.map(code => DISTRICT_MAP[code] || code).sort()]}
                       value={selectedDistrict}
                       onChange={setSelectedDistrict}
                       placeholder="Select District"
@@ -680,7 +699,7 @@ export default function Home({
                       <div className="sidebar-title-modern font-poppins">
                         <SlidersHorizontal size={16} /> Filters
                       </div>
-                      {(selectedDistrict !== "All Districts" || selectedBranch !== "All Branches" || selectedType !== "All" || selectedChance !== "All" || searchTerm || sortBy !== "best_match") && (
+                      {(selectedDistrict !== "All Districts" || selectedBranch !== "All Branches" || selectedType !== "All" || selectedChance !== "All" || searchTerm || sortBy !== "lowest_rank") && (
                         <button className="clear-btn font-poppins" onClick={handleReset}>Reset</button>
                       )}
                     </div>
