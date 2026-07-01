@@ -2669,3 +2669,14 @@
   transform: translateY(-1px);
 }
 
+/* Mobile Navbar Media Queries */
+@media (max-width: 768px) {
+  .desktop-only-nav {
+    display: none !important;
+  }
+  .mobile-hamburger-btn {
+    display: block !important;
+  }
+}
+
+
