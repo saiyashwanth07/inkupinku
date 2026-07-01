@@ -5,7 +5,6 @@ import Home from "./views/Home";
 import Dashboard from "./views/Dashboard";
 import AdminPanel from "./views/AdminPanel";
 import RequestModal from "./components/RequestModal";
-import MentorshipWidget from "./components/MentorshipWidget";
 import HelpWidget from "./components/HelpWidget";
 import LoadingScreen from "./components/LoadingScreen";
 import AuthModal from "./components/AuthModal";
@@ -244,9 +243,6 @@ export default function App() {
 
       {/* Floating "Need Help?" counselling widget */}
       <HelpWidget />
-
-      {/* Floating AI Bot — Inku & Pinku */}
-      <MentorshipWidget user={user} />
 
       {/* Authentication Modal */}
       {showAuth && (
