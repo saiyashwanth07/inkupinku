@@ -18,6 +18,9 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
   // Firebase confirmation results
   const [confirmationResult, setConfirmationResult] = useState(null);
 
+  const formattedMobile = mobile.trim().startsWith("+") ? mobile.trim() : `+91${mobile.trim()}`;
+  const isTestNumber = formattedMobile === "+919848575599" || formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
+
   // Initialize invisible recaptcha
   useEffect(() => {
     if (isFirebaseConfigured() && step === "input") {
@@ -84,9 +87,6 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
     setAuthError("");
     setIsLoading(true);
 
-    const formattedMobile = mobile.trim().startsWith("+") ? mobile.trim() : `+91${mobile.trim()}`;
-    const isTestNumber = formattedMobile === "+919848575599" || formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
-
     // Handle Mock SMS Fallback if Firebase is not configured OR if using a test number
     if (!isFirebaseConfigured() || isTestNumber) {
       setTimeout(async () => {
@@ -110,7 +110,7 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
 
         setIsLoading(false);
         setStep("otp");
-        alert(`[SMS SIMULATOR] OTP code sent to ${formattedMobile}. Enter code: 123456 to verify.`);
+        // Simulated transition (no intrusive browser alert)
       }, 800);
       return;
     }
@@ -170,14 +170,12 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
     setAuthError("");
     setIsLoading(true);
 
-    const formattedMobile = mobile.trim().startsWith("+") ? mobile.trim() : `+91${mobile.trim()}`;
-    const isTestNumber = formattedMobile === "+919848575599" || formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
-
     // Mock SMS Verification
     if (!isFirebaseConfigured() || isTestNumber) {
       setTimeout(async () => {
-        if (otp !== "123456") {
-          setAuthError("Invalid OTP code. Please enter 123456.");
+        const expectedOtp = formattedMobile === "+919848575599" ? "559999" : "123456";
+        if (otp !== expectedOtp) {
+          setAuthError(`Invalid OTP code. Please enter ${expectedOtp}.`);
           setIsLoading(false);
           return;
         }
@@ -360,6 +358,11 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
               <div style={{ background: "var(--primary-light)", padding: "12px 16px", borderRadius: "12px", border: "1px dashed rgba(37, 99, 235, 0.2)", fontSize: "0.85rem", color: "var(--secondary-light)" }}>
                 Verification OTP code sent to: <br />
                 <strong style={{ color: "var(--secondary)" }}>+91 {mobile}</strong>
+                {isTestNumber && (
+                  <div style={{ marginTop: "8px", fontSize: "0.75rem", color: "var(--primary)", fontWeight: "600" }}>
+                    💡 Test Mode: Please enter <strong>{mobile === "9848575599" ? "559999" : "123456"}</strong> to verify.
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
