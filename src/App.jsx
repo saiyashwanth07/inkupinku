@@ -121,7 +121,7 @@ export default function App() {
     if (loggedInUser.role === "admin") {
       setCurrentView("admin");
     } else {
-      setCurrentView("dashboard");
+      setCurrentView("home");
     }
   };
 
