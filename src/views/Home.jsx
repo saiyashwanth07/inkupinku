@@ -107,7 +107,7 @@ function SearchableSelect({ label, options, value, onChange, placeholder = "Sele
   return (
     <div className="form-group" style={{ position: "relative", marginBottom: "14px" }} ref={dropdownRef}>
       <label className="form-label">{label}</label>
-      <div 
+      <div
         className="input-style"
         style={{
           display: "flex",
@@ -243,7 +243,7 @@ export default function Home({
         const dists = Array.from(new Set(fetchedColleges.map(c => c.district))).filter(Boolean).sort();
         const brs = Array.from(new Set(fetchedColleges.flatMap(c => c.cutoffs.map(cut => cut.branch)))).filter(Boolean).sort();
         const typs = Array.from(new Set(fetchedColleges.map(c => c.type))).filter(Boolean).sort();
-        
+
         setAvailableDistricts(dists);
         setAvailableBranches(brs);
         setAvailableTypes(typs);
@@ -263,9 +263,9 @@ export default function Home({
         setGender(rerunQuery.gender);
         setLocalArea(rerunQuery.localArea);
         setPreferredBranch(rerunQuery.preferredBranch || "All Branches");
-        
+
         setIsLoading(true);
-        
+
         // Wait briefly for smooth transition
         setTimeout(async () => {
           let rank = Number(rerunQuery.rank);
@@ -420,7 +420,7 @@ export default function Home({
     // 1. Text Search Filter (Search by name, district, or branch)
     if (searchTerm.trim() !== "") {
       const term = searchTerm.toLowerCase();
-      results = results.filter(c => 
+      results = results.filter(c =>
         c.name.toLowerCase().includes(term) ||
         c.code.toLowerCase().includes(term) ||
         c.district.toLowerCase().includes(term) ||
@@ -533,10 +533,10 @@ export default function Home({
           <h3 className="font-poppins" style={{ fontSize: "1.3rem", fontWeight: "800", marginBottom: "24px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ color: "var(--primary)" }}>⚡</span> College Admission Predictor
           </h3>
-          
+
           <form onSubmit={handlePredict}>
             <div className="form-grid">
-              
+
               {/* Input Value */}
               <div className="form-group">
                 <label className="form-label">
@@ -560,14 +560,14 @@ export default function Home({
                   onChange={(e) => setCategory(e.target.value)}
                   className="input-style"
                 >
-                  <option value="OC">OC (Open Competition)</option>
+                  <option value="OC">OC</option>
                   <option value="BC_A">BC-A</option>
                   <option value="BC_B">BC-B</option>
                   <option value="BC_C">BC-C</option>
                   <option value="BC_D">BC-D</option>
                   <option value="BC_E">BC-E</option>
-                  <option value="SC">SC (Scheduled Caste)</option>
-                  <option value="ST">ST (Scheduled Tribe)</option>
+                  <option value="SC">SC</option>
+                  <option value="ST">ST</option>
                 </select>
               </div>
 
@@ -656,36 +656,6 @@ export default function Home({
                       placeholder="Select Branch"
                     />
                   </div>
-
-                  {/* College Type Filter */}
-                  <div className="filter-section-modern font-poppins">
-                    <label className="filter-label-modern">College Type</label>
-                    <select
-                      value={selectedType}
-                      onChange={(e) => setSelectedType(e.target.value)}
-                      className="select-style-modern"
-                    >
-                      <option value="All">All Types</option>
-                      {availableTypes.map(t => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Admission Chance Filter */}
-                  <div className="filter-section-modern font-poppins">
-                    <label className="filter-label-modern">Admission Chance</label>
-                    <select
-                      value={selectedChance}
-                      onChange={(e) => setSelectedChance(e.target.value)}
-                      className="select-style-modern"
-                    >
-                      <option value="All">All Chances</option>
-                      <option value="Safe">Safe</option>
-                      <option value="Possible">Possible</option>
-                      <option value="Borderline">Borderline</option>
-                    </select>
-                  </div>
                 </>
               );
 
@@ -699,7 +669,7 @@ export default function Home({
                       <div className="sidebar-title-modern font-poppins">
                         <SlidersHorizontal size={16} /> Filters
                       </div>
-                      {(selectedDistrict !== "All Districts" || selectedBranch !== "All Branches" || selectedType !== "All" || selectedChance !== "All" || searchTerm || sortBy !== "lowest_rank") && (
+                      {(selectedDistrict !== "All Districts" || selectedBranch !== "All Branches" || searchTerm || sortBy !== "lowest_rank") && (
                         <button className="clear-btn font-poppins" onClick={handleReset}>Reset</button>
                       )}
                     </div>
@@ -710,7 +680,7 @@ export default function Home({
 
                   {/* Results Grid Container */}
                   <div className="results-list-container">
-                    
+
                     {/* Search Box ABOVE the results */}
                     <div className="instant-search-container font-poppins">
                       <label className="search-box-label">🔍 Search College</label>
@@ -732,7 +702,7 @@ export default function Home({
                         <h2>Showing <strong>{visibleColleges.length}</strong> of <strong>{filteredResults.length}</strong> Matching Colleges</h2>
                         <p>Results are based on previous year's AP EAPCET cutoff data.</p>
                       </div>
-                      
+
                       <div className="header-right-sort font-poppins">
                         <span className="sort-label">Sort By</span>
                         <select
@@ -760,7 +730,7 @@ export default function Home({
                           </p>
                           <button className="btn btn-outline font-poppins" onClick={handleReset}>Clear Filters</button>
                         </div>
-                        
+
                         <div style={{ borderTop: "1px solid var(--border)", paddingTop: "24px" }}>
                           <FeaturedUniversityCard rank={userRank} startIndex={0} />
                         </div>
@@ -780,7 +750,7 @@ export default function Home({
                             onRequestDetails={onRequestDetails}
                           />
                         );
-                        
+
                         // Insert Featured University after every 2 colleges
                         if ((index + 1) % 2 === 0) {
                           const recIndex = Math.floor((index + 1) / 2) - 1;
@@ -830,7 +800,7 @@ export default function Home({
                             <p style={{ color: "var(--text-secondary)", marginBottom: "24px", maxWidth: "400px", margin: "0 auto 24px" }}>
                               Create a free account to view all matching colleges, detailed cutoffs, and expert predictions tailored to your rank.
                             </p>
-                            <button 
+                            <button
                               className="btn btn-primary"
                               onClick={onAuthClick}
                             >
@@ -856,8 +826,8 @@ export default function Home({
                           {renderFiltersContent()}
                         </div>
                         <div className="mobile-sheet-footer font-poppins">
-                          <button 
-                            className="mobile-sheet-apply-btn" 
+                          <button
+                            className="mobile-sheet-apply-btn"
                             onClick={() => setIsMobileFiltersOpen(false)}
                           >
                             Show {filteredResults.length} Colleges
@@ -868,7 +838,7 @@ export default function Home({
                   )}
 
                   {/* Mobile Floating Trigger button */}
-                  <button 
+                  <button
                     className="mobile-filters-trigger-btn font-poppins"
                     onClick={() => setIsMobileFiltersOpen(true)}
                   >
