@@ -2679,4 +2679,53 @@
   }
 }
 
+/* Mobile Responsive College Cards */
+@media (max-width: 768px) {
+  .college-card-modern {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .card-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .card-top-right-actions {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .college-name-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .college-district-meta {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  
+  .card-actions-row .actions-left-grp {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-request-details, .btn-talk-expert {
+    width: 100%;
+    max-width: none;
+    text-align: center;
+  }
+  
+  .branches-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 

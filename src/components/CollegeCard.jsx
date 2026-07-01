@@ -49,10 +49,6 @@ export default function CollegeCard({
       {/* Top Section */}
       <div className="card-top-row">
         <div className="card-logo-info">
-          {/* Logo Badge */}
-          <div className="college-logo-avatar font-poppins">
-            {code}
-          </div>
           <div className="college-title-meta">
             <div className="college-name-row">
               <h3 className="college-name-title font-poppins">{name}</h3>
@@ -60,7 +56,8 @@ export default function CollegeCard({
               <span className="tag-type font-poppins">{type}</span>
             </div>
             <div className="college-district-meta font-poppins">
-              <MapPin size={13} />
+              <span className="college-code-tag" style={{ background: "var(--primary-light)", color: "var(--primary)", padding: "2px 8px", borderRadius: "12px", fontSize: "0.75rem", fontWeight: "700" }}>{code}</span>
+              <MapPin size={13} style={{ marginLeft: "4px" }} />
               <span>{district}</span>
             </div>
           </div>
