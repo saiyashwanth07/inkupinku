@@ -4,351 +4,67 @@ import {
   collection, addDoc, getDocs, doc, getDoc, setDoc, query, where, orderBy, deleteDoc 
 } from "firebase/firestore";
 
-// Default Colleges raw data (16 colleges)
-const DEFAULT_COLLEGES_RAW = [
-  {
-    id: "auce",
-    name: "Andhra University College of Engineering (A)",
-    code: "AUCE",
-    district: "Visakhapatnam",
-    type: "Government",
-    tuitionFee: 35000,
-    website: "https://www.andhrauniversity.edu.in",
-    isPartner: false,
-    rating: 4.9,
-    established: 1946,
-    campusSize: "400 Acres",
-    placements: "92% (8.8 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 1200
-  },
-  {
-    id: "jntuk",
-    name: "JNTU College of Engineering, Kakinada",
-    code: "JNTUK",
-    district: "East Godavari",
-    type: "Government",
-    tuitionFee: 10000,
-    website: "https://www.jntuk.edu.in",
-    isPartner: false,
-    rating: 4.8,
-    established: 1946,
-    campusSize: "110 Acres",
-    placements: "88% (7.5 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 1500
-  },
-  {
-    id: "svuce",
-    name: "Sri Venkateswara University College of Engineering",
-    code: "SVUCE",
-    district: "Chittoor",
-    type: "Government",
-    tuitionFee: 30000,
-    website: "https://www.svuniversity.edu.in",
-    isPartner: false,
-    rating: 4.7,
-    established: 1954,
-    campusSize: "350 Acres",
-    placements: "86% (7.2 LPA Avg)",
-    localArea: "SVU",
-    baseCSEOCBoys: 2500
-  },
-  {
-    id: "jntua",
-    name: "JNTU College of Engineering, Anantapur",
-    code: "JNTUA",
-    district: "Anantapur",
-    type: "Government",
-    tuitionFee: 10000,
-    website: "https://www.jntua.ac.in",
-    isPartner: false,
-    rating: 4.5,
-    established: 1946,
-    campusSize: "155 Acres",
-    placements: "82% (6.0 LPA Avg)",
-    localArea: "SVU",
-    baseCSEOCBoys: 3800
-  },
-  {
-    id: "gvpe",
-    name: "Gayatri Vidya Parishad College of Engineering (A)",
-    code: "GVPE",
-    district: "Visakhapatnam",
-    type: "Private",
-    tuitionFee: 69000,
-    website: "https://www.gvpce.ac.in",
-    isPartner: true,
-    rating: 4.6,
-    established: 1996,
-    campusSize: "21 Acres",
-    placements: "94% (6.8 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 4200
-  },
-  {
-    id: "vrse",
-    name: "VR Siddhartha Engineering College",
-    code: "VRSE",
-    district: "Krishna",
-    type: "Private",
-    tuitionFee: 73000,
-    website: "https://www.vrsec.ac.in",
-    isPartner: true,
-    rating: 4.6,
-    established: 1977,
-    campusSize: "24 Acres",
-    placements: "91% (6.5 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 5500
-  },
-  {
-    id: "rvrjc",
-    name: "RVR & JC College of Engineering",
-    code: "RVRJ",
-    district: "Guntur",
-    type: "Private",
-    tuitionFee: 68000,
-    website: "https://rvrjcce.ac.in",
-    isPartner: false,
-    rating: 4.5,
-    established: 1985,
-    campusSize: "37 Acres",
-    placements: "89% (6.0 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 7500
-  },
-  {
-    id: "anits",
-    name: "Anil Neerukonda Institute of Technology & Sciences",
-    code: "ANITS",
-    district: "Visakhapatnam",
-    type: "Private",
-    tuitionFee: 61000,
-    website: "https://www.anits.edu.in",
-    isPartner: false,
-    rating: 4.4,
-    established: 2001,
-    campusSize: "12 Acres",
-    placements: "85% (5.5 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 8500
-  },
-  {
-    id: "srkr",
-    name: "SRKR Engineering College",
-    code: "SRKR",
-    district: "West Godavari",
-    type: "Private",
-    tuitionFee: 70000,
-    website: "https://srkr.ac.in",
-    isPartner: false,
-    rating: 4.5,
-    established: 1980,
-    campusSize: "30 Acres",
-    placements: "88% (5.8 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 9800
-  },
-  {
-    id: "svec",
-    name: "Sree Vidyanikethan Engineering College",
-    code: "SVEC",
-    district: "Chittoor",
-    type: "Private",
-    tuitionFee: 70000,
-    website: "https://svec.education",
-    isPartner: false,
-    rating: 4.4,
-    established: 1996,
-    campusSize: "30 Acres",
-    placements: "85% (5.6 LPA Avg)",
-    localArea: "SVU",
-    baseCSEOCBoys: 11000
-  },
-  {
-    id: "pvps",
-    name: "Prasad V. Potluri Siddhartha Institute of Technology",
-    code: "PVPS",
-    district: "Krishna",
-    type: "Private",
-    tuitionFee: 67000,
-    website: "http://www.pvpsiddhartha.ac.in",
-    isPartner: false,
-    rating: 4.3,
-    established: 1998,
-    campusSize: "20 Acres",
-    placements: "83% (5.2 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 11500
-  },
-  {
-    id: "gmrit",
-    name: "GMR Institute of Technology",
-    code: "GMRIT",
-    district: "Srikakulam",
-    type: "Private",
-    tuitionFee: 66000,
-    website: "http://www.gmrit.org",
-    isPartner: true,
-    rating: 4.5,
-    established: 1997,
-    campusSize: "117 Acres",
-    placements: "90% (6.2 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 12500
-  },
-  {
-    id: "vvit",
-    name: "Vasireddy Venkatadri Institute of Technology",
-    code: "VVIT",
-    district: "Guntur",
-    type: "Private",
-    tuitionFee: 62000,
-    website: "https://www.vvitguntur.com",
-    isPartner: false,
-    rating: 4.3,
-    established: 2007,
-    campusSize: "26 Acres",
-    placements: "84% (5.3 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 13000
-  },
-  {
-    id: "lbrce",
-    name: "Lakireddy Bali Reddy College of Engineering",
-    code: "LBRCE",
-    district: "Krishna",
-    type: "Private",
-    tuitionFee: 65000,
-    website: "https://www.lbrce.ac.in",
-    isPartner: false,
-    rating: 4.2,
-    established: 1998,
-    campusSize: "60 Acres",
-    placements: "80% (5.0 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 14000
-  },
-  {
-    id: "mits",
-    name: "Madanapalle Institute of Technology & Science",
-    code: "MITS",
-    district: "Chittoor",
-    type: "Private",
-    tuitionFee: 69800,
-    website: "https://www.mits.ac.in",
-    isPartner: true,
-    rating: 4.4,
-    established: 1998,
-    campusSize: "26 Acres",
-    placements: "86% (5.8 LPA Avg)",
-    localArea: "SVU",
-    baseCSEOCBoys: 16000
-  },
-  {
-    id: "rec",
-    name: "Raghu Engineering College",
-    code: "REC",
-    district: "Visakhapatnam",
-    type: "Private",
-    tuitionFee: 62000,
-    website: "https://raghuenggcolleges.com",
-    isPartner: false,
-    rating: 4.2,
-    established: 2001,
-    campusSize: "40 Acres",
-    placements: "82% (5.1 LPA Avg)",
-    localArea: "AU",
-    baseCSEOCBoys: 22000
-  }
-];
-
-const BRANCH_MULTIPLIERS = {
-  CSE: 1.0,
-  CSM: 1.15,
-  CSD: 1.25,
-  IT: 1.35,
-  ECE: 1.6,
-  EEE: 2.5,
-  MECH: 4.0,
-  CIVIL: 5.0
-};
-
-const CATEGORY_MULTIPLIERS = {
-  OC: 1.0,
-  BC_A: 1.6,
-  BC_B: 1.5,
-  BC_C: 1.45,
-  BC_D: 1.7,
-  BC_E: 2.0,
-  SC: 4.5,
-  ST: 6.0
-};
-
-const GENDER_MULTIPLIERS = {
-  Boys: 1.0,
-  Girls: 1.2
-};
-
-const BRANCHES = ["CSE", "CSM", "CSD", "IT", "ECE", "EEE", "MECH", "CIVIL"];
-const CATEGORIES = ["OC", "BC_A", "BC_B", "BC_C", "BC_D", "BC_E", "SC", "ST"];
-const GENDERS = ["Boys", "Girls"];
-const LOCAL_AREAS = ["AU", "SVU", "OU"];
-
-function generateCutoffs(college) {
-  const cutoffs = [];
-  for (const branch of BRANCHES) {
-    const branchMult = BRANCH_MULTIPLIERS[branch];
-    for (const category of CATEGORIES) {
-      const catMult = CATEGORY_MULTIPLIERS[category];
-      for (const gender of GENDERS) {
-        const genderMult = GENDER_MULTIPLIERS[gender];
-        for (const localArea of LOCAL_AREAS) {
-          let localAreaFactor = 1.0;
-          if (localArea === college.localArea) {
-            localAreaFactor = 1.0;
-          } else if (localArea === "OU") {
-            localAreaFactor = 0.5;
-          } else {
-            localAreaFactor = 0.4;
-          }
-          
-          let closingRank = Math.round(
-            college.baseCSEOCBoys * 
-            branchMult * 
-            catMult * 
-            genderMult * 
-            (1 / localAreaFactor)
-          );
-          
-          const variation = 0.95 + Math.random() * 0.1;
-          closingRank = Math.round(closingRank * variation);
-          
-          if (closingRank < 100) closingRank = 100;
-          if (closingRank > 150000) closingRank = 150000;
-
-          cutoffs.push({
-            branch,
-            category,
-            gender,
-            localArea,
-            closingRank
-          });
-        }
-      }
-    }
-  }
-  return cutoffs;
-}
+import collegeData from "../data/colleges.json";
 
 export const getDefaultColleges = () => {
-  return DEFAULT_COLLEGES_RAW.map(col => {
-    const cutoffs = generateCutoffs(col);
-    const { baseCSEOCBoys, ...cleanCollege } = col;
+  return collegeData.map(col => {
+    // Flatten the branches and cutoffs into the format expected by the app
+    const cutoffs = [];
+    if (col.branches) {
+      col.branches.forEach(b => {
+        if (b.cutoffs) {
+          Object.keys(b.cutoffs).forEach(catKey => {
+            // catKey is like "OC-Boys" or "BC-A-Girls"
+            const parts = catKey.split("-");
+            const gender = parts.pop(); // "Boys" or "Girls"
+            let category = parts.join("-");
+            
+            // Standardize category strings to match the app's CATEGORIES array
+            // e.g. "BC-A" -> "BC_A"
+            if (category.startsWith("BC-")) {
+              category = category.replace("-", "_");
+            }
+            
+            // Only add if it's a valid cutoff
+            if (b.cutoffs[catKey]) {
+              const baseRank = b.cutoffs[catKey];
+              const AREAS = ["AU", "SVU", "OU"];
+              
+              AREAS.forEach(area => {
+                const isLocal = (area === col.localArea);
+                // Non-local quota (15%) is much more competitive. 
+                // We estimate non-local closing rank as 70% of the local closing rank.
+                const closingRank = isLocal ? baseRank : Math.round(baseRank * 0.7);
+                
+                cutoffs.push({
+                  branch: b.branch,
+                  category: category,
+                  gender: gender,
+                  localArea: area, 
+                  closingRank: closingRank
+                });
+              });
+            }
+          });
+        }
+      });
+    }
+
     return {
-      ...cleanCollege,
-      cutoffs
+      id: col.id,
+      name: col.name,
+      code: col.code,
+      district: col.district,
+      type: col.type,
+      tuitionFee: col.tuitionFee,
+      website: col.website,
+      isPartner: col.isPartner,
+      rating: col.rating,
+      established: col.established,
+      campusSize: col.campusSize,
+      placements: col.placements,
+      localArea: col.localArea,
+      cutoffs: cutoffs
     };
   });
 };
@@ -793,10 +509,14 @@ export const seedSupabaseDB = async () => {
 
 // Initialize local storage databases
 export const initializeDB = () => {
-  if (!localStorage.getItem("eapcet_colleges")) {
-    const defaultColleges = getDefaultColleges();
-    localStorage.setItem("eapcet_colleges", JSON.stringify(defaultColleges));
+  // Force update to the new EAPCET excel dataset
+  const datasetVersion = "1.1";
+  if (localStorage.getItem("dataset_version") !== datasetVersion) {
+    localStorage.removeItem("eapcet_colleges");
+    localStorage.setItem("dataset_version", datasetVersion);
   }
+
+  // Bypass localStorage for massive colleges JSON to prevent QuotaExceededError.
   if (!localStorage.getItem("eapcet_recommendations")) {
     localStorage.setItem("eapcet_recommendations", JSON.stringify(DEFAULT_RECOMMENDED_UNIVERSITIES));
   }
@@ -857,7 +577,8 @@ export const getColleges = async () => {
   }
 
   initializeDB();
-  return JSON.parse(localStorage.getItem("eapcet_colleges"));
+  // Return from memory directly instead of localStorage to avoid quota crash
+  return getDefaultColleges();
 };
 
 export const saveColleges = async (colleges) => {

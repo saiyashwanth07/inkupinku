@@ -85,9 +85,10 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
     setIsLoading(true);
 
     const formattedMobile = mobile.trim().startsWith("+") ? mobile.trim() : `+91${mobile.trim()}`;
+    const isTestNumber = formattedMobile === "+919848575599" || formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
 
-    // Handle Mock SMS Fallback if Firebase is not configured
-    if (!isFirebaseConfigured()) {
+    // Handle Mock SMS Fallback if Firebase is not configured OR if using a test number
+    if (!isFirebaseConfigured() || isTestNumber) {
       setTimeout(async () => {
         // Look up registered users for login check
         const users = await getUsers();
@@ -170,9 +171,10 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
     setIsLoading(true);
 
     const formattedMobile = mobile.trim().startsWith("+") ? mobile.trim() : `+91${mobile.trim()}`;
+    const isTestNumber = formattedMobile === "+919848575599" || formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
 
     // Mock SMS Verification
-    if (!isFirebaseConfigured()) {
+    if (!isFirebaseConfigured() || isTestNumber) {
       setTimeout(async () => {
         if (otp !== "123456") {
           setAuthError("Invalid OTP code. Please enter 123456.");

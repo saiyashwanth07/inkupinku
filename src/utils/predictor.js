@@ -21,29 +21,29 @@ export const mapDropdownBranchToDbCode = (dropdownBranch) => {
   const b = (dropdownBranch || "").toUpperCase();
   if (b.includes("ALL BRANCHES") || b.includes("ANY BRANCH") || b === "") return "ALL";
   
-  if (b.includes("COMPUTER SCIENCE ENGINEERING") || b === "CSE" || b === "CSE (IOT)") return "CSE";
-  if (
-    b.includes("ARTIFICIAL INTELLIGENCE & MACHINE LEARNING") ||
-    b.includes("AI & ML") ||
-    b.includes("CSE (ARTIFICIAL INTELLIGENCE") ||
-    b === "CSM"
-  ) {
-    return "CSM";
-  }
-  if (
-    b.includes("DATA SCIENCE") ||
-    b.includes("AI & DATA SCIENCE") ||
-    b === "CSD"
-  ) {
-    return "CSD";
-  }
-  if (b.includes("INFORMATION TECHNOLOGY") || b === "IT") return "IT";
+  if (b === "COMPUTER SCIENCE ENGINEERING (CSE)") return "CSE";
+  if (b === "CSE (ARTIFICIAL INTELLIGENCE & MACHINE LEARNING)") return "CSM";
+  if (b === "CSE (DATA SCIENCE)") return "CSD";
+  if (b === "CSE (CYBER SECURITY)") return "CSC";
+  if (b === "CSE (ARTIFICIAL INTELLIGENCE)") return "CAI";
+  if (b === "CSE (IOT)") return "CSO";
+  if (b === "INFORMATION TECHNOLOGY (IT)") return "INF";
+  if (b === "ELECTRONICS & COMMUNICATION ENGINEERING (ECE)") return "ECE";
+  if (b === "ELECTRICAL & ELECTRONICS ENGINEERING (EEE)") return "EEE";
+  if (b === "MECHANICAL ENGINEERING") return "MEC";
+  if (b === "CIVIL ENGINEERING") return "CIV";
+  if (b === "ARTIFICIAL INTELLIGENCE & MACHINE LEARNING (AI & ML)") return "AIM";
+  if (b === "ARTIFICIAL INTELLIGENCE & DATA SCIENCE") return "AID";
+  if (b === "DATA SCIENCE") return "CSD";
+  if (b === "CYBER SECURITY") return "CSC";
+  if (b === "BIOTECHNOLOGY") return "BIO";
+  if (b === "CHEMICAL ENGINEERING") return "CHE";
+  
+  if (b.includes("INFORMATION TECHNOLOGY") || b === "IT") return "INF";
   if (b.includes("ELECTRONICS & COMMUNICATION") || b === "ECE") return "ECE";
   if (b.includes("ELECTRICAL & ELECTRONICS") || b === "EEE") return "EEE";
-  if (b.includes("MECHANICAL") || b === "MECH") return "MECH";
-  if (b.includes("CIVIL") || b === "CIVIL") return "CIVIL";
-  if (b.includes("BIOTECHNOLOGY")) return "BIOTECHNOLOGY";
-  if (b.includes("CHEMICAL")) return "CHEMICAL";
+  if (b.includes("MECHANICAL") || b === "MECH") return "MEC";
+  if (b.includes("CIVIL") || b === "CIVIL") return "CIV";
   
   return b;
 };
@@ -61,11 +61,17 @@ export const courseMatchesBranch = (course, preferredBranch) => {
   if (mappedCourse === dbCode) return true;
   if (c.includes(dbCode) || dbCode.includes(c)) return true;
 
-  if (dbCode === "CSM") {
-    return c.includes("AI") || c.includes("ML") || c.includes("MACHINE LEARNING") || c.includes("ARTIFICIAL");
+  if (dbCode === "CSM" || dbCode === "AIM" || dbCode === "CAI") {
+    return c === "CSM" || c === "AIM" || c === "CAI" || c.includes("AI");
   }
-  if (dbCode === "CSD") {
-    return c.includes("DATA") || c.includes("DS") || c.includes("SCIENCE");
+  if (dbCode === "CSD" || dbCode === "AID") {
+    return c === "CSD" || c === "AID" || c.includes("DATA");
+  }
+  if (dbCode === "CSC" || dbCode === "CSS" || dbCode === "CSN") {
+    return c === "CSC" || c === "CSS" || c === "CSN" || c.includes("CYBER");
+  }
+  if (dbCode === "INF") {
+    return c === "INF" || c === "IT";
   }
 
   return false;
@@ -85,7 +91,7 @@ export const predictColleges = ({ rank, category, gender, localArea, preferredBr
     
     for (const cutoff of college.cutoffs) {
       // Check branch preference AND constraint
-      const branchMatches = (preferredDbCode === "ALL" || cutoff.branch === preferredDbCode);
+      const branchMatches = (preferredDbCode === "ALL" || courseMatchesBranch(cutoff.branch, preferredBranch));
 
       // Filter by user selection
       if (
@@ -142,12 +148,18 @@ export const predictColleges = ({ rank, category, gender, localArea, preferredBr
     }
   }
 
-  // Sort colleges by overall chance (Safe first), then by college rating descending
+  // Sort colleges by overall chance (Safe first), then by college rating descending, then by best closing rank
   results.sort((a, b) => {
     if (a.overallChanceScore !== b.overallChanceScore) {
       return a.overallChanceScore - b.overallChanceScore;
     }
-    return b.rating - a.rating;
+    if (a.rating !== b.rating) {
+      return b.rating - a.rating;
+    }
+    // Elite sorting: Push colleges with harder (lower) cutoffs to the top
+    const bestA = a.eligibleBranches[0]?.closingRank || 999999;
+    const bestB = b.eligibleBranches[0]?.closingRank || 999999;
+    return bestA - bestB;
   });
 
   return results;

@@ -8,6 +8,7 @@ import RequestModal from "./components/RequestModal";
 import MentorshipWidget from "./components/MentorshipWidget";
 import HelpWidget from "./components/HelpWidget";
 import LoadingScreen from "./components/LoadingScreen";
+import AuthModal from "./components/AuthModal";
 import { 
   initializeDB, 
   getFavoritesSync, 
@@ -44,10 +45,11 @@ export default function App() {
   // Initialize DB and bind Auth observer
   useEffect(() => {
     initializeDB();
+    let unsubscribe = null;
     
     // Check if Firebase Auth is active
     if (isFirebaseConfigured() && fbAuth) {
-      const unsubscribe = onAuthStateChanged(fbAuth, async (fbUser) => {
+      unsubscribe = onAuthStateChanged(fbAuth, async (fbUser) => {
         if (fbUser) {
           // Look up Firestore profile
           const usersList = await getUsers();
@@ -78,7 +80,6 @@ export default function App() {
           await loadUserData("guest");
         }
       });
-      return () => unsubscribe();
     } else {
       // Local Auth Fallback
       const savedUser = localStorage.getItem("eapcet_current_user");
@@ -92,9 +93,14 @@ export default function App() {
     }
 
     // Minimum delay to show the cute loading animation
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsAppLoading(false);
     }, 2000);
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   // Load user specific data asynchronously
@@ -184,12 +190,17 @@ export default function App() {
       <Navbar
         currentView={currentView}
         onViewChange={setCurrentView}
+        user={user}
+        onLoginClick={() => setShowAuth(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main screens routing */}
       <main className="main-content">
         {currentView === "home" && (
           <Home
+            user={user}
+            onAuthClick={() => setShowAuth(true)}
             favorites={favorites}
             onFavoriteToggle={handleFavoriteToggle}
             onRequestDetails={handleRequestDetails}
@@ -236,6 +247,14 @@ export default function App() {
 
       {/* Floating AI Bot — Inku & Pinku */}
       <MentorshipWidget user={user} />
+
+      {/* Authentication Modal */}
+      {showAuth && (
+        <AuthModal 
+          onClose={() => setShowAuth(false)} 
+          onLoginSuccess={handleLoginSuccess} 
+        />
+      )}
     </div>
     </>
   );

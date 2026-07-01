@@ -473,14 +473,14 @@ export default function Home({
       {/* ---- Hero Section ---- */}
       <section className="hero">
         <div className="container hero-content">
-          <div className="hero-tag font-poppins">✦ AP EAPCET Counseling 2026</div>
+          <div className="hero-tag font-poppins">✦ AP EAPCET College Predictor 2026</div>
           <h1 className="hero-title font-poppins">
-            Find Your Best College
+            Find Your Suitable College
             <br />
             <span className="hero-title-accent">in Seconds</span>
           </h1>
           <p className="hero-subtitle">
-            Enter your Rank or Marks to instantly discover government &amp; private engineering colleges where you have the highest admission chances.
+            Enter your Rank to instantly discover government &amp; private engineering colleges where you have the highest admission chances.
           </p>
           <div className="hero-actions">
             <a href="#predictor-form" className="btn hero-btn-primary font-poppins">
@@ -518,35 +518,14 @@ export default function Home({
           <form onSubmit={handlePredict}>
             <div className="form-grid">
               
-              {/* Rank vs Marks Toggle */}
-              <div className="form-group">
-                <label className="form-label">Select Input Type</label>
-                <div className="toggle-container">
-                  <button
-                    type="button"
-                    className={`toggle-btn ${inputType === "rank" ? "active" : ""}`}
-                    onClick={() => { setInputType("rank"); setInputValue(""); setFormErrors({}); }}
-                  >
-                    EAPCET Rank
-                  </button>
-                  <button
-                    type="button"
-                    className={`toggle-btn ${inputType === "marks" ? "active" : ""}`}
-                    onClick={() => { setInputType("marks"); setInputValue(""); setFormErrors({}); }}
-                  >
-                    Exam Marks (Out of 160)
-                  </button>
-                </div>
-              </div>
-
               {/* Input Value */}
               <div className="form-group">
                 <label className="form-label">
-                  Enter {inputType === "rank" ? "AP EAPCET Rank" : "Total EAPCET Marks"}
+                  Enter AP EAPCET Rank
                 </label>
                 <input
                   type="text"
-                  placeholder={inputType === "rank" ? "e.g., 25000" : "e.g., 95"}
+                  placeholder="e.g., 25000"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   className="input-style"
@@ -691,8 +670,7 @@ export default function Home({
                 </>
               );
 
-              // Calculate guest limiting variables
-              const visibleColleges = filteredResults;
+              // Calculate guest limiting variables (removed local redeclarations to prevent ReferenceError)
 
               return (
                 <div className="results-layout">
@@ -811,6 +789,36 @@ export default function Home({
                             />
                           );
                         }
+                      }
+
+                      const shouldLock = !user && filteredResults.length > 2;
+                      if (shouldLock) {
+                        elements.push(
+                          <div key="locked-card" className="locked-results-card font-poppins" style={{
+                            background: "linear-gradient(135deg, rgba(235, 248, 255, 0.9), rgba(224, 231, 255, 0.9))",
+                            backdropFilter: "blur(10px)",
+                            borderRadius: "16px",
+                            padding: "40px 20px",
+                            textAlign: "center",
+                            border: "1px solid rgba(59, 130, 246, 0.2)",
+                            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.05)",
+                            marginTop: "20px"
+                          }}>
+                            <Lock size={48} style={{ color: "var(--primary)", margin: "0 auto 16px" }} />
+                            <h3 style={{ fontSize: "1.5rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "12px" }}>
+                              Unlock {filteredResults.length - 2} More Colleges!
+                            </h3>
+                            <p style={{ color: "var(--text-secondary)", marginBottom: "24px", maxWidth: "400px", margin: "0 auto 24px" }}>
+                              Create a free account to view all matching colleges, detailed cutoffs, and expert predictions tailored to your rank.
+                            </p>
+                            <button 
+                              className="btn btn-primary"
+                              onClick={onAuthClick}
+                            >
+                              Sign Up to Unlock
+                            </button>
+                          </div>
+                        );
                       }
 
                       return elements;
