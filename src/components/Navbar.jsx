@@ -17,7 +17,7 @@ export default function Navbar({ currentView, onViewChange, user, onLoginClick, 
     <nav className="navbar" style={{ position: "relative", zIndex: 1000 }}>
       <div className="container navbar-container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <a href="#" className="logo-link font-poppins" onClick={() => handleNavClick("home")} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <img src="/logo.png" alt="College Mentor Logo" style={{ height: "42px", objectFit: "contain" }} />
+          <img src="/logo.webp" alt="College Mentor Logo" width="195" height="42" style={{ height: "42px", width: "195px", objectFit: "contain" }} />
         </a>
 
         {/* Desktop Menu links */}
@@ -59,6 +59,7 @@ export default function Navbar({ currentView, onViewChange, user, onLoginClick, 
         {/* Mobile Hamburger Toggle Button */}
         <button 
           className="mobile-hamburger-btn" 
+          aria-label="Toggle Navigation Menu"
           onClick={handleMobileToggle}
           style={{
             background: "none",

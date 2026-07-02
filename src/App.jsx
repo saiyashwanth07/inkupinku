@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./views/Home";
@@ -6,7 +6,7 @@ import Dashboard from "./views/Dashboard";
 import AdminPanel from "./views/AdminPanel";
 import RequestModal from "./components/RequestModal";
 import HelpWidget from "./components/HelpWidget";
-import AuthModal from "./components/AuthModal";
+const AuthModal = lazy(() => import("./components/AuthModal"));
 import { 
   initializeDB, 
   getFavoritesSync, 
@@ -289,10 +289,12 @@ export default function App() {
 
         {/* Auth Modal */}
         {showAuth && (
-          <AuthModal 
-            onClose={() => setShowAuth(false)} 
-            onLoginSuccess={handleLoginSuccess} 
-          />
+          <Suspense fallback={<div className="modal-overlay font-poppins"><div className="modal-content"><p>Loading secure login...</p></div></div>}>
+            <AuthModal 
+              onClose={() => setShowAuth(false)} 
+              onLoginSuccess={handleLoginSuccess} 
+            />
+          </Suspense>
         )}
       </div>
     </>

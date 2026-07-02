@@ -575,8 +575,9 @@ export default function Home({
 
               {/* Category */}
               <div className="form-group">
-                <label className="form-label">Admission Category</label>
+                <label htmlFor="admission-category" className="form-label">Admission Category</label>
                 <select
+                  id="admission-category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="input-style"
@@ -594,8 +595,9 @@ export default function Home({
 
               {/* Gender */}
               <div className="form-group">
-                <label className="form-label">Gender Quota</label>
+                <label htmlFor="gender-quota" className="form-label">Gender Quota</label>
                 <select
+                  id="gender-quota"
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
                   className="input-style"
@@ -607,8 +609,9 @@ export default function Home({
 
               {/* Local Area */}
               <div className="form-group form-grid-full">
-                <label className="form-label">Local Region (AP Local Status Area)</label>
+                <label htmlFor="local-region" className="form-label">Local Region (AP Local Status Area)</label>
                 <select
+                  id="local-region"
                   value={localArea}
                   onChange={(e) => setLocalArea(e.target.value)}
                   className="input-style"
@@ -726,8 +729,9 @@ export default function Home({
                       </div>
 
                       <div className="header-right-sort font-poppins">
-                        <span className="sort-label">Sort By</span>
+                        <span id="sort-by-label" className="sort-label">Sort By</span>
                         <select
+                          aria-labelledby="sort-by-label"
                           value={sortBy}
                           onChange={(e) => setSortBy(e.target.value)}
                           className="sort-select-modern"
