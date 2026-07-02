@@ -11,8 +11,8 @@ export default function Footer({ onViewChange }) {
 
           {/* Brand */}
           <div className="footer-brand">
-            <div className="footer-logo font-poppins" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <img src="/logo.png" alt="College Mentor Logo" style={{ height: "36px", objectFit: "contain" }} />
+            <div className="footer-logo">
+              <img src="/logo.webp" alt="College Mentor Logo" width="167" height="36" style={{ height: "36px", width: "167px", objectFit: "contain" }} />
             </div>
             <p className="footer-desc">
               An intelligent college prediction platform helping AP EAPCET students find the best engineering admission opportunities across Andhra Pradesh.
@@ -78,14 +78,9 @@ export default function Footer({ onViewChange }) {
 
         {/* Bottom bar */}
         <div className="footer-bottom" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-          <div>
-            &copy; {new Date().getFullYear()} AP EAPCET College Predictor. Built for educational guidance.
-          </div>
-          
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "0.8rem", color: "#64748B", fontWeight: "600" }}>Powered by</span>
-            <img src="/logo.png" alt="College Mentor" style={{ height: "24px", objectFit: "contain" }} />
-          </div>
+          <p className="copyright font-poppins">
+            © {new Date().getFullYear()} <img src="/logo.webp" alt="College Mentor" width="111" height="24" style={{ height: "24px", width: "111px", objectFit: "contain", verticalAlign: "middle" }} />. All rights reserved.
+          </p>
 
           <div className="footer-bottom-links">
             <a href="#" className="footer-link" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
