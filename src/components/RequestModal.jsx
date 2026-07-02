@@ -40,6 +40,8 @@ export default function RequestModal({ college, branchName, user, onClose }) {
     // 1. Save to new `leads` collection in Firestore
     await saveLead({
       userId,
+      name: formData.name,
+      mobile: "+91" + formData.mobile,
       university: college.name,
       action: "Request Details"
     });

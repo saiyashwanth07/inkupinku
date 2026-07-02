@@ -156,7 +156,13 @@ const CollegeCard = memo(function CollegeCard({
               target="_blank"
               rel="noreferrer"
               className="btn-talk-expert font-poppins"
-              onClick={() => saveLead({ userId: user?.uid || user?.id || "guest", university: name, action: "Talk to Expert" })}
+              onClick={() => saveLead({
+                userId: user?.uid || user?.id || "guest",
+                name: user?.name || "Guest User",
+                mobile: user?.phoneNumber || user?.phone || "",
+                university: name,
+                action: "Talk to Expert"
+              })}
             >
               Talk to an Expert
             </a>

@@ -1084,12 +1084,30 @@ export const getUserProfile = async (uid, defaultPhone) => {
   return usersList.find(u => u.uid === uid || u.id === uid || u.phoneNumber === defaultPhone || u.phone === defaultPhone);
 };
 
+/** Check if user profile exists by phone number */
+export const checkUserExistsByPhone = async (phone) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const q = query(collection(fbDb, "users"), where("phoneNumber", "==", phone));
+      const querySnapshot = await getDocs(q);
+      return !querySnapshot.empty;
+    } catch (err) {
+      console.warn("Firestore checkUserExistsByPhone failed:", err);
+    }
+  }
+  // Fallback to local DB search
+  const usersList = await getUsers();
+  return usersList.some(u => u.phoneNumber === phone || u.phone === phone);
+};
+
 /** Save a lead (action event) to Firestore leads collection */
-export const saveLead = async ({ userId, university, action }) => {
+export const saveLead = async ({ userId, name, mobile, university, action }) => {
   if (isFirebaseConfigured()) {
     try {
       await addDoc(collection(fbDb, "leads"), {
         userId: userId || "guest",
+        name: name || "Guest User",
+        mobile: mobile || "",
         university: university || "",
         action: action || "Unknown",
         timestamp: new Date().toISOString(),
@@ -1097,7 +1115,7 @@ export const saveLead = async ({ userId, university, action }) => {
       });
       return;
     } catch (err) {
-      console.warn("Firestore saveLead failed", err);
+      console.warn("Firestore saveLead failed:", err);
     }
   }
   // Local fallback

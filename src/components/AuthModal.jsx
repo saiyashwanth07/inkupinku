@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Phone, User, Eye, AlertCircle, ArrowRight, ShieldCheck } from "lucide-react";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth, isFirebaseConfigured } from "../utils/firebase";
-import { getUsers, saveUsers, getUserProfile } from "../utils/db";
+import { getUsers, saveUsers, getUserProfile, checkUserExistsByPhone } from "../utils/db";
 
 export default function AuthModal({ onClose, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState("login"); // "login" | "register"
@@ -69,27 +69,27 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
     setAuthError("");
     setIsLoading(true);
 
+    try {
+      const userExists = await checkUserExistsByPhone(formattedMobile);
+
+      if (activeTab === "login" && !userExists && formattedMobile !== "+917997166666" && formattedMobile !== "+919999999999" && formattedMobile !== "+919848575599") {
+        setAuthError("Mobile number is not registered. Please create an account first.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (activeTab === "register" && userExists) {
+        setAuthError("Mobile number is already registered. Please Sign In.");
+        setIsLoading(false);
+        return;
+      }
+    } catch (e) {
+      console.warn("Failed to check if user exists:", e);
+    }
+
     // Handle Mock SMS Fallback ONLY if Firebase is not configured
     if (!isFirebaseConfigured()) {
-      setTimeout(async () => {
-        // Look up registered users for login check
-        const users = await getUsers();
-        const userExists = users.some(
-          u => (u.phoneNumber === formattedMobile || u.phone === formattedMobile)
-        );
-
-        if (activeTab === "login" && !userExists && formattedMobile !== "+917997166666" && formattedMobile !== "+919999999999") {
-          setAuthError("Mobile number is not registered. Please register first.");
-          setIsLoading(false);
-          return;
-        }
-
-        if (activeTab === "register" && userExists) {
-          setAuthError("Mobile number is already registered. Please Sign In.");
-          setIsLoading(false);
-          return;
-        }
-
+      setTimeout(() => {
         setIsLoading(false);
         setStep("otp");
       }, 800);
