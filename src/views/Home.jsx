@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { SlidersHorizontal, AlertTriangle, Sparkles, Lock, ArrowRight, Search, Phone, MessageSquare, Check, X } from "lucide-react";
 import SkeletonLoader from "../components/SkeletonLoader";
 import CollegeCard from "../components/CollegeCard";
 import FeaturedUniversityCard from "../components/FeaturedUniversityCard";
 import { predictColleges, getRecommendationsForProfile } from "../utils/predictor";
 import { getColleges, getRecommendations } from "../utils/db";
+import { getBranchDisplayName } from "../utils/branchNames";
 
 const DISTRICT_MAP = {
   'ATP': 'Anantapur',
@@ -85,7 +86,7 @@ const FORM_PREFERRED_BRANCHES = [
   "Any Branch"
 ];
 
-function SearchableSelect({ label, options, value, onChange, placeholder = "Select..." }) {
+function SearchableSelect({ label, options, value, onChange, placeholder = "Select...", formatOption }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const dropdownRef = useRef(null);
@@ -100,9 +101,12 @@ function SearchableSelect({ label, options, value, onChange, placeholder = "Sele
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredOptions = options.filter(opt =>
-    opt.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredOptions = options.filter(opt => {
+    const displayOpt = formatOption ? formatOption(opt) : opt;
+    return displayOpt.toLowerCase().includes(search.toLowerCase());
+  });
+
+  const displayValue = value && value !== placeholder ? (formatOption ? formatOption(value) : value) : placeholder;
 
   return (
     <div className="form-group" style={{ position: "relative", marginBottom: "14px" }} ref={dropdownRef}>
@@ -118,8 +122,8 @@ function SearchableSelect({ label, options, value, onChange, placeholder = "Sele
         }}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span>{value || placeholder}</span>
-        <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>▼</span>
+        <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginRight: "8px" }}>{displayValue}</span>
+        <span style={{ fontSize: "0.75rem", opacity: 0.7, flexShrink: 0 }}>▼</span>
       </div>
 
       {isOpen && (
@@ -154,27 +158,31 @@ function SearchableSelect({ label, options, value, onChange, placeholder = "Sele
                 No results found
               </div>
             ) : (
-              filteredOptions.map((opt) => (
-                <div
-                  key={opt}
-                  style={{
-                    padding: "8px 12px",
-                    fontSize: "0.84rem",
-                    color: opt === value ? "var(--primary)" : "var(--text-secondary)",
-                    background: opt === value ? "var(--primary-light)" : "transparent",
-                    cursor: "pointer",
-                    fontWeight: opt === value ? "600" : "500"
-                  }}
-                  onClick={() => {
-                    onChange(opt);
-                    setIsOpen(false);
-                    setSearch("");
-                  }}
-                  className="dropdown-option-hover"
-                >
-                  {opt}
-                </div>
-              ))
+              filteredOptions.map((opt) => {
+                const displayOpt = formatOption ? formatOption(opt) : opt;
+                return (
+                  <div
+                    key={opt}
+                    style={{
+                      padding: "8px 12px",
+                      fontSize: "0.84rem",
+                      color: opt === value ? "var(--primary)" : "var(--text-secondary)",
+                      background: opt === value ? "var(--primary-light)" : "transparent",
+                      cursor: "pointer",
+                      fontWeight: opt === value ? "600" : "500",
+                      lineHeight: "1.3"
+                    }}
+                    onClick={() => {
+                      onChange(opt);
+                      setIsOpen(false);
+                      setSearch("");
+                    }}
+                    className="dropdown-option-hover"
+                  >
+                    {displayOpt}
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
@@ -377,6 +385,8 @@ export default function Home({
           gender,
           localArea,
           preferredBranch,
+          branch: preferredBranch !== "All Branches" ? preferredBranch : null,
+          district: selectedDistrict !== "All Districts" ? selectedDistrict : null,
           matchesCount: predicted.length
         });
       }
@@ -665,6 +675,7 @@ export default function Home({
                       value={selectedBranch}
                       onChange={setSelectedBranch}
                       placeholder="Select Branch"
+                      formatOption={(opt) => opt === "All Branches" ? "All Branches" : getBranchDisplayName(opt)}
                     />
                   </div>
                 </>
@@ -743,7 +754,7 @@ export default function Home({
                         </div>
 
                         <div style={{ borderTop: "1px solid var(--border)", paddingTop: "24px" }}>
-                          <FeaturedUniversityCard rank={userRank} startIndex={0} />
+                          <FeaturedUniversityCard rank={userRank} branch={selectedBranch !== "All Branches" ? selectedBranch : preferredBranch} startIndex={0} />
                         </div>
                       </div>
                     )}
@@ -769,6 +780,7 @@ export default function Home({
                             <FeaturedUniversityCard
                               key={`featured-${index}`}
                               rank={userRank}
+                              branch={selectedBranch !== "All Branches" ? selectedBranch : preferredBranch}
                               startIndex={recIndex}
                             />
                           );
@@ -785,6 +797,7 @@ export default function Home({
                             <FeaturedUniversityCard
                               key="featured-end"
                               rank={userRank}
+                              branch={selectedBranch !== "All Branches" ? selectedBranch : preferredBranch}
                               startIndex={carouselIndex}
                             />
                           );
@@ -829,7 +842,7 @@ export default function Home({
                               onClick={() => setVisibleCount(v => v + 7)}
                               style={{ width: '100%', maxWidth: '300px' }}
                             >
-                              Load More ({filteredResults.length - visibleCount} remaining)
+                              Load Next ({filteredResults.length - visibleCount} remaining)
                             </button>
                           </div>
                         );
