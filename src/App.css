@@ -2668,8 +2668,204 @@
   border-color: var(--border-strong);
   transform: translateY(-1px);
 }
+/* ================================================
+   GLOBAL TYPOGRAPHY & SPACING POLISH
+   ================================================ */
 
-/* Mobile Navbar Media Queries */
+/* --- Base reset for consistent font rendering --- */
+*, *::before, *::after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Poppins', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+/* Container tighter padding on small screens */
+.container {
+  padding: 0 20px;
+}
+
+/* ================================================
+   NAVBAR RESPONSIVE TYPOGRAPHY
+   ================================================ */
+.logo-link {
+  font-size: 1rem;
+  letter-spacing: -0.2px;
+}
+
+.nav-link {
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ================================================
+   HERO TYPOGRAPHY POLISH
+   ================================================ */
+.hero-title {
+  font-size: 2.8rem;
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 500px;
+}
+
+.hero-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.6px;
+}
+
+.hero-stat-value {
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.hero-stat-label {
+  font-size: 0.7rem;
+}
+
+/* ================================================
+   FORM TYPOGRAPHY
+   ================================================ */
+.form-label {
+  font-size: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.6px;
+}
+
+.input-style {
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  padding: 11px 14px;
+  line-height: 1.4;
+}
+
+.toggle-btn {
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ================================================
+   SIDEBAR TYPOGRAPHY
+   ================================================ */
+.sidebar-title-modern {
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.filter-label-modern {
+  font-size: 0.68rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 1px;
+}
+
+.select-style-modern {
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ================================================
+   RESULTS HEADER TYPOGRAPHY
+   ================================================ */
+.header-left-info h2 {
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.header-left-info p {
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.sort-label {
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.sort-select-modern {
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ================================================
+   COLLEGE CARD TYPOGRAPHY
+   ================================================ */
+.college-name-title {
+  font-size: 1.05rem;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+.tag-partner, .tag-type {
+  font-size: 0.68rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.college-district-meta {
+  font-size: 0.78rem;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.overall-chance-badge {
+  font-size: 0.7rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.4px;
+}
+
+.branches-header-title {
+  font-size: 0.72rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
+}
+
+.branch-code-text {
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.3;
+}
+
+.branch-cutoff-text {
+  font-size: 0.7rem;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.3;
+}
+
+.branch-chance-indicator-modern {
+  font-size: 0.66rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+}
+
+.btn-request-details {
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.1px;
+}
+
+.btn-talk-expert {
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.1px;
+}
+
+/* ================================================
+   MOBILE NAVBAR
+   ================================================ */
 @media (max-width: 768px) {
   .desktop-only-nav {
     display: none !important;
@@ -2679,53 +2875,287 @@
   }
 }
 
-/* Mobile Responsive College Cards */
-@media (max-width: 768px) {
-  .college-card-modern {
-    padding: 16px;
-    gap: 16px;
+/* ================================================
+   LARGE TABLET ≤ 1024px
+   ================================================ */
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 2.4rem;
+    letter-spacing: -1px;
   }
-  
+
+  .college-name-title {
+    font-size: 1rem;
+  }
+}
+
+/* ================================================
+   TABLET ≤ 768px
+   ================================================ */
+@media (max-width: 768px) {
+  /* Container */
+  .container {
+    padding: 0 16px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 48px 0 72px;
+  }
+
+  .hero-title {
+    font-size: 1.9rem;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+  }
+
+  .hero-subtitle {
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+
+  .hero-stats {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-stat-value {
+    font-size: 1.3rem;
+  }
+
+  .hero-stat-label {
+    font-size: 0.66rem;
+  }
+
+  /* Form */
+  .form-card {
+    padding: 18px 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .form-grid-full {
+    grid-column: span 1;
+  }
+
+  .form-label {
+    font-size: 0.72rem;
+  }
+
+  .input-style {
+    font-size: 0.88rem;
+    padding: 10px 12px;
+  }
+
+  /* Results header */
+  .results-header-modern {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-left-info h2 {
+    font-size: 0.95rem;
+  }
+
+  .header-right-sort {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* College card */
+  .college-card-modern {
+    padding: 14px;
+    gap: 14px;
+  }
+
   .card-top-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
   }
-  
+
   .card-top-right-actions {
     width: 100%;
     justify-content: space-between;
-    margin-top: 8px;
-    padding-top: 12px;
+    padding-top: 10px;
     border-top: 1px solid var(--border);
   }
-  
+
   .college-name-row {
-    align-items: flex-start;
     flex-direction: column;
-    gap: 6px;
+    align-items: flex-start;
+    gap: 5px;
   }
-  
+
+  .college-name-title {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .tag-partner, .tag-type {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+  }
+
   .college-district-meta {
+    font-size: 0.75rem;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 6px;
+    gap: 6px;
+    margin-top: 4px;
   }
-  
+
+  .branches-header-title {
+    font-size: 0.68rem;
+    margin-bottom: 8px;
+  }
+
+  .branch-tag-modern {
+    padding: 8px 12px;
+  }
+
+  .branch-code-text {
+    font-size: 0.8rem;
+  }
+
+  .branch-cutoff-text {
+    font-size: 0.67rem;
+  }
+
+  .branches-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .card-actions-row {
+    padding-top: 12px;
+  }
+
   .card-actions-row .actions-left-grp {
     flex-direction: column;
     width: 100%;
+    gap: 8px;
   }
-  
+
   .btn-request-details, .btn-talk-expert {
     width: 100%;
     max-width: none;
     text-align: center;
+    font-size: 0.82rem;
+    padding: 10px 16px;
   }
-  
-  .branches-grid-layout {
+
+  /* Sidebar */
+  .filters-sidebar-modern {
+    display: none !important;
+  }
+  .mobile-filters-trigger-btn {
+    display: flex !important;
+  }
+
+  /* Mobile bottom sheet */
+  .mobile-sheet-content {
+    width: 100% !important;
+    border-radius: var(--r-xl) var(--r-xl) 0 0 !important;
+  }
+
+  /* Footer */
+  .footer-grid {
     grid-template-columns: 1fr;
   }
 }
 
+/* ================================================
+   SMALL MOBILE ≤ 480px
+   ================================================ */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
 
+  .hero {
+    padding: 40px 0 64px;
+  }
+
+  .hero-title {
+    font-size: 1.65rem;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 0.88rem;
+  }
+
+  .hero-tag {
+    font-size: 0.68rem;
+    padding: 4px 12px;
+  }
+
+  .hero-stats {
+    gap: 12px;
+  }
+
+  .hero-stat-value {
+    font-size: 1.2rem;
+  }
+
+  .form-card {
+    padding: 14px 12px;
+    border-radius: var(--r-lg);
+  }
+
+  .form-label {
+    font-size: 0.7rem;
+  }
+
+  .input-style {
+    font-size: 0.85rem;
+    padding: 9px 11px;
+  }
+
+  .toggle-btn {
+    font-size: 0.78rem;
+    padding: 8px 6px;
+  }
+
+  .college-card-modern {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .college-name-title {
+    font-size: 0.9rem;
+  }
+
+  .overall-chance-badge {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+
+  .btn-request-details, .btn-talk-expert {
+    font-size: 0.8rem;
+    padding: 9px 14px;
+  }
+
+  .branches-header-title {
+    font-size: 0.65rem;
+  }
+
+  .branch-code-text {
+    font-size: 0.78rem;
+  }
+
+  .branch-cutoff-text {
+    font-size: 0.65rem;
+  }
+
+  .logo-link {
+    font-size: 0.9rem;
+  }
+}
