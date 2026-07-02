@@ -26,21 +26,51 @@ const BADGES = [
   "Explore additional admission opportunities"
 ];
 
-export default function FeaturedUniversityCard({ rank, startIndex = 0 }) {
-  // Get recommended list based on rank
+export default function FeaturedUniversityCard({ rank, branch, startIndex = 0 }) {
+  // Get recommended list based on rank and branch
   const getRecommendedList = () => {
+    let list = FEATURED_UNIVERSITIES;
+
+    // Apply branch-specific overrides
+    if (branch && branch !== "All Branches") {
+      const b = branch.toLowerCase();
+      if (b.includes("cse") || b.includes("computer science") || b.includes("csc")) {
+        // GANPAT on top, Aditya secondary
+        const ganpat = list.find(u => u.id === "ganpat");
+        const aditya = list.find(u => u.id === "aditya");
+        const others = list.filter(u => u.id !== "ganpat" && u.id !== "aditya");
+        return [ganpat, aditya, ...others].filter(Boolean);
+      } else if (b.includes("ece") || b.includes("electronics & communication")) {
+        // Manav Rachna on top
+        const mru = list.find(u => u.id === "manavrachna");
+        const others = list.filter(u => u.id !== "manavrachna");
+        return [mru, ...others].filter(Boolean);
+      } else if (b.includes("ai") || b.includes("machine learning") || b.includes("mech") || b.includes("mechanical")) {
+        // Bharath Univ on top
+        const bharath = list.find(u => u.id === "bharath");
+        const others = list.filter(u => u.id !== "bharath");
+        return [bharath, ...others].filter(Boolean);
+      } else if (b.includes("data science") || b.includes("csm")) {
+        // Aditya on top
+        const aditya = list.find(u => u.id === "aditya");
+        const others = list.filter(u => u.id !== "aditya");
+        return [aditya, ...others].filter(Boolean);
+      }
+    }
+
+    // Default rank-based logic if no specific branch rule matched or if 'All Branches'
     const r = Number(rank) || 0;
-    if (r === 0) return FEATURED_UNIVERSITIES;
+    if (r === 0) return list;
     if (r <= 10000) {
-      return FEATURED_UNIVERSITIES.filter(u => ["aditya", "vishwavishwani", "ganpat"].includes(u.id));
+      return list.filter(u => ["aditya", "vishwavishwani", "ganpat"].includes(u.id));
     } else if (r <= 25000) {
-      return FEATURED_UNIVERSITIES.filter(u => ["aditya", "bharath", "manavrachna"].includes(u.id));
+      return list.filter(u => ["aditya", "bharath", "manavrachna"].includes(u.id));
     } else if (r <= 50000) {
-      return FEATURED_UNIVERSITIES.filter(u => ["bharath", "ganpat", "amity"].includes(u.id));
+      return list.filter(u => ["bharath", "ganpat", "amity"].includes(u.id));
     } else if (r <= 100000) {
-      return FEATURED_UNIVERSITIES.filter(u => ["quantum", "alliance", "chandigarh", "mgr"].includes(u.id));
+      return list.filter(u => ["quantum", "alliance", "chandigarh", "mgr"].includes(u.id));
     } else {
-      return FEATURED_UNIVERSITIES;
+      return list;
     }
   };
 
@@ -88,7 +118,22 @@ export default function FeaturedUniversityCard({ rank, startIndex = 0 }) {
   };
 
   // Get dynamic badge text based on index
-  const badgeText = BADGES[currentIndex % BADGES.length];
+  let badgeText = BADGES[currentIndex % BADGES.length];
+  let tagText = "Recommended for You";
+  
+  if (branch && branch !== "All Branches" && currentIndex === 0) {
+    if (activeUni.id === "ganpat" && (branch.toLowerCase().includes("cse") || branch.toLowerCase().includes("computer science"))) {
+      tagText = "Best & Highly Recommended for CSE";
+    } else if (activeUni.id === "manavrachna" && branch.toLowerCase().includes("ece")) {
+      tagText = "Top Pick for ECE Programs";
+    } else if (activeUni.id === "bharath" && (branch.toLowerCase().includes("ai") || branch.toLowerCase().includes("mech"))) {
+      tagText = "Premium Choice for this Branch";
+    } else if (activeUni.id === "aditya" && branch.toLowerCase().includes("data science")) {
+      tagText = "Best for Data Science & Advanced Tech";
+    } else {
+      tagText = `Top Choice for ${branch}`;
+    }
+  }
 
   if (!activeUni) return null;
 
@@ -101,7 +146,7 @@ export default function FeaturedUniversityCard({ rank, startIndex = 0 }) {
       >
         {/* Recommended Tag */}
         <div className="rec-tag font-poppins">
-          <Star size={14} fill="var(--primary)" /> Recommended for You
+          <Star size={14} fill="var(--primary)" /> {tagText}
         </div>
 
         {/* Top Info */}
