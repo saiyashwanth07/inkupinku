@@ -875,6 +875,117 @@ export default function Home({
           </>
         )}
       </section>
+
+      {/* ============================================================
+          SEO / AEO / GEO CONTENT SECTIONS
+          Semantic HTML for search engines, AI crawlers & featured snippets
+          ============================================================ */}
+
+      {/* About Section */}
+      <section className="container" style={{ marginBottom: '56px', marginTop: '8px' }} aria-label="About AP EAPCET College Predictor">
+        <div style={{
+          background: 'var(--card)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--r-xl)',
+          padding: '32px',
+          boxShadow: 'var(--shadow-sm)'
+        }}>
+          <h2 className="font-poppins" style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '12px' }}>
+            AP EAPCET College Predictor 2025 – How It Works
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: '1.75', marginBottom: '16px', fontSize: '0.92rem' }}>
+            The <strong>AP EAPCET College Predictor</strong> is a free tool designed for Andhra Pradesh engineering aspirants. It uses official <strong>AP EAPCET 2024 closing rank data</strong> to predict which colleges you can get admission to based on your rank, category, gender, and local area zone.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+            {[
+              { label: '500+ Colleges', desc: 'Government & private engineering colleges across all 26 AP districts' },
+              { label: '8 Categories', desc: 'OC, BC-A/B/C/D/E, SC, ST category-wise cutoff analysis' },
+              { label: 'Zone Filter', desc: 'AU, SVU, and OU zone local area quota filtering' },
+              { label: 'Branch Predictor', desc: 'CSE, ECE, EEE, ME, Civil and 30+ branch-wise predictions' }
+            ].map(item => (
+              <div key={item.label} style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', padding: '14px' }}>
+                <div className="font-poppins" style={{ fontWeight: '700', fontSize: '0.9rem', color: 'var(--primary)', marginBottom: '4px' }}>{item.label}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section – AEO (Answer Engine Optimization) */}
+      <section className="container" style={{ marginBottom: '72px' }} aria-label="Frequently Asked Questions about AP EAPCET">
+        <h2 className="font-poppins" style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>
+          Frequently Asked Questions – AP EAPCET 2025
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {[
+            {
+              q: 'What is AP EAPCET and who can apply?',
+              a: 'AP EAPCET (Andhra Pradesh Engineering, Agriculture and Pharmacy Common Entrance Test) is the state-level entrance exam for admission to engineering, agriculture, and pharmacy courses in Andhra Pradesh. Students who completed Class 12 with Physics, Chemistry, and Mathematics (PCM) and secured at least 45% marks (40% for SC/ST) can apply.'
+            },
+            {
+              q: 'How accurate is this AP EAPCET college predictor?',
+              a: 'This predictor is based on official AP EAPCET 2024 final phase closing rank data from APSCHE. Predictions are highly accurate for most colleges but actual cutoffs may vary by ±500–2,000 ranks per year depending on the number of applicants and seat availability. Always use it as a reference and verify on the official APSCHE website.'
+            },
+            {
+              q: 'What does AU zone, SVU zone, and OU zone mean?',
+              a: 'These are local area zones for AP EAPCET counselling. AU (Andhra University) zone covers coastal Andhra districts including Visakhapatnam, Kakinada, Eluru, and Guntur. SVU (Sri Venkateswara University) zone covers Rayalaseema districts including Tirupati, Kurnool, and Kadapa. OU (Osmania University) zone is for students from Telangana region. Local Area (LA) quota gives preference to students from that zone.'
+            },
+            {
+              q: 'What are the top government engineering colleges in AP for CSE?',
+              a: 'Top government colleges for CSE in AP via EAPCET include: AU College of Engineering Visakhapatnam (cutoff ~800–2,000), JNTU Kakinada (~1,500–4,000), SVUCE Tirupati (~2,000–5,000), UCE Rajam (~3,000–7,000), and RGUKT IIIT campuses (Ongole, Srikakulam, Nuzvid). These have the lowest cutoff ranks and excellent placement records.'
+            },
+            {
+              q: 'What is a good AP EAPCET rank to get CSE in a private college?',
+              a: 'For CSE (Computer Science Engineering) in a reputed private college in AP, a rank below 30,000 is generally safe. For AI/ML, Data Science, or Cyber Security branches, ranks up to 40,000–50,000 can also secure seats in top private colleges. For CSE in Tier-1 private colleges like Shiv Nadar, VIT-AP, or SRM-AP, ranks below 15,000 are preferred.'
+            },
+            {
+              q: 'How to fill AP EAPCET web options for counselling?',
+              a: 'After AP EAPCET results, qualified students must: 1) Register on apsche.ap.gov.in, 2) Pay the processing fee, 3) Upload documents for certificate verification, 4) Enter web options (college + branch preferences in order of preference), 5) Attend seat allotment. It is advisable to fill 30–50 options across different colleges and branches for the best outcome.'
+            },
+            {
+              q: 'What is the fee structure for engineering colleges in AP EAPCET?',
+              a: 'AP government engineering colleges (GU) charge approximately ₹15,000–₹35,000 per year for tuition. Aided private colleges charge ₹35,000–₹60,000. Unaided (self-finance) private colleges charge ₹60,000–₹1,50,000 per year. NRI quota seats can cost significantly more. Fee reimbursement schemes are available for eligible BC/SC/ST students in government and aided colleges.'
+            },
+            {
+              q: 'What branches are available in AP EAPCET engineering colleges?',
+              a: 'AP EAPCET engineering colleges offer branches including: CSE, ECE (Electronics & Communication), EEE (Electrical), Mechanical Engineering, Civil Engineering, CSE (AI & ML), CSE (Data Science), CSE (Cyber Security), CSE (IoT), IT (Information Technology), Chemical Engineering, Biotechnology, Aeronautical Engineering, Automobile Engineering, and more.'
+            }
+          ].map((item, i) => (
+            <details key={i} style={{
+              background: 'var(--card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--r-lg)',
+              overflow: 'hidden'
+            }}>
+              <summary className="font-poppins" style={{
+                padding: '16px 20px',
+                fontWeight: '700',
+                fontSize: '0.92rem',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                listStyle: 'none',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <span>{item.q}</span>
+                <span style={{ color: 'var(--primary)', flexShrink: 0, fontSize: '1.1rem' }}>+</span>
+              </summary>
+              <div style={{
+                padding: '0 20px 16px',
+                color: 'var(--text-secondary)',
+                fontSize: '0.88rem',
+                lineHeight: '1.75',
+                borderTop: '1px solid var(--border)'
+              }}>
+                <p style={{ margin: '12px 0 0 0' }}>{item.a}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

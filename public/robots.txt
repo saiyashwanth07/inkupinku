@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://inkupinku.netlify.app/sitemap.xml
+
+# Block admin panel from indexing
+Disallow: /#admin
