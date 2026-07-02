@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Star, MapPin, Award, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { getBranchDisplayName } from "../utils/branchNames";
+import { saveLead } from "../utils/db";
 
-export default function CollegeCard({
+const CollegeCard = memo(function CollegeCard({
   college,
   isFavorite,
   onFavoriteToggle,
-  onRequestDetails
+  onRequestDetails,
+  user
 }) {
   const {
     id,
@@ -101,7 +104,7 @@ export default function CollegeCard({
           {eligibleBranches && (isExpanded ? eligibleBranches : eligibleBranches.slice(0, isMobile ? 0 : 2)).map((eb) => (
             <div className="branch-tag-modern" key={eb.branch}>
               <div className="branch-info-col">
-                <span className="branch-code-text font-poppins">{eb.branch}</span>
+                <span className="branch-code-text font-poppins">{getBranchDisplayName(eb.branch)}</span>
                 <span className="branch-cutoff-text">Cutoff Rank: <strong>{eb.closingRank.toLocaleString()}</strong></span>
               </div>
               <span className={`branch-chance-indicator-modern ${getChanceBadgeClass(eb.chance)}`}>
@@ -149,10 +152,11 @@ export default function CollegeCard({
           
           {isPartner && (
             <a
-              href={`https://api.whatsapp.com/send?phone=917997166666&text=Hi!%20I%20am%20interested%20in%20learning%20more%20about%20admissions%20at%20${encodeURIComponent(name)}.`}
+              href={`https://api.whatsapp.com/send?phone=917997166666&text=Hi!%20I%20am%20interested%20in%20admissions%20at%20${encodeURIComponent(name)}.`}
               target="_blank"
               rel="noreferrer"
               className="btn-talk-expert font-poppins"
+              onClick={() => saveLead({ userId: user?.uid || user?.id || "guest", university: name, action: "Talk to Expert" })}
             >
               Talk to an Expert
             </a>
@@ -161,5 +165,6 @@ export default function CollegeCard({
       </div>
     </div>
   );
-}
+});
 
+export default CollegeCard;

@@ -163,14 +163,13 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
           if (activeUser) {
             setAuthError("User already exists. Logging in.");
           } else {
-            // Create user locally
+            // Create user locally — NO fake email
             const isFirstAdmin = formattedMobile === "+919999999999";
             activeUser = {
               uid: "mock-uid-" + Date.now(),
               id: "mock-uid-" + Date.now(),
               name: fullName,
               phoneNumber: formattedMobile,
-              email: "student_" + mobile + "@admissionindia.in",
               role: isFirstAdmin ? "admin" : "student"
             };
             usersList.push(activeUser);
@@ -210,14 +209,13 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
       const usersList = await getUsers(); // Fallback for saveUsers array management
 
       if (!activeUser) {
-        // Create Firestore profile
-        const isFirstAdmin = formattedMobile === "+919999999999" || formattedMobile === "+917997166666"; // Admin tags fallback
+        // Create Firestore profile — NO fake email
+        const isFirstAdmin = formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
         activeUser = {
           uid: fbUser.uid,
           id: fbUser.uid,
-          name: activeTab === "register" ? fullName : "EAPCET Candidate",
+          name: activeTab === "register" ? fullName : "Student",
           phoneNumber: fbUser.phoneNumber,
-          email: isFirstAdmin ? "admin@eapcet.com" : `student_${mobile}@admissionindia.in`,
           role: isFirstAdmin ? "admin" : "student"
         };
         usersList.push(activeUser);

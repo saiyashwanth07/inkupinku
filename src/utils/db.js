@@ -805,17 +805,20 @@ export const saveUsers = async (users) => {
   const latest = users[users.length - 1];
   if (!latest) return;
 
-  // 1. Cloud Firestore write
+  // 1. Cloud Firestore write — clean schema, NO fake email
   if (isFirebaseConfigured()) {
     try {
       const uid = latest.uid || latest.id || Date.now().toString();
       await setDoc(doc(fbDb, "users", uid), {
-        fullName: latest.name,
+        fullName: latest.name || "Student",
         phoneNumber: latest.phoneNumber || latest.phone || "",
-        email: latest.email || "",
         role: latest.role || "student",
-        createdAt: new Date().toISOString()
-      });
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        preferredBranch: latest.preferredBranch || null,
+        preferredCategory: latest.preferredCategory || null,
+        preferredDistrict: latest.preferredDistrict || null
+      }, { merge: true });
       return;
     } catch (err) {
       console.warn("Firestore insert user profile failed", err);
@@ -828,7 +831,6 @@ export const saveUsers = async (users) => {
       const { error } = await supabase.from("users").upsert([{
         id: latest.id || Date.now().toString(),
         name: latest.name,
-        email: latest.email || "",
         phone: latest.phoneNumber || latest.phone || "",
         password: latest.password || "firebase-auth",
         role: latest.role
@@ -841,6 +843,19 @@ export const saveUsers = async (users) => {
 
   // 3. Local fallback
   localStorage.setItem("eapcet_users", JSON.stringify(users));
+};
+
+/** Update lastLogin timestamp for a user in Firestore */
+export const updateLastLogin = async (uid) => {
+  if (isFirebaseConfigured() && uid) {
+    try {
+      await setDoc(doc(fbDb, "users", uid), {
+        lastLogin: new Date().toISOString()
+      }, { merge: true });
+    } catch (err) {
+      console.warn("Firestore updateLastLogin failed", err);
+    }
+  }
 };
 
 export const getPredictionHistorySync = async (email) => {
@@ -928,8 +943,12 @@ export const savePredictionToHistorySync = async (email, queryItem) => {
         marks: queryItem.inputType === "marks" ? queryItem.inputValue : null,
         category: queryItem.category,
         gender: queryItem.gender,
+        district: queryItem.district || null,
+        branch: queryItem.branch || null,
         localArea: queryItem.localArea,
+        totalEligibleColleges: queryItem.matchesCount || 0,
         matchesCount: queryItem.matchesCount,
+        predictionTime: queryItem.date || new Date().toISOString(),
         createdAt: queryItem.date || new Date().toISOString()
       });
       return;
@@ -1037,10 +1056,12 @@ export const getUserProfile = async (uid, defaultPhone) => {
         return {
           uid: docSnap.id,
           id: docSnap.id,
-          name: d.fullName,
-          email: d.email || "",
+          name: d.fullName || "Student",
           phoneNumber: d.phoneNumber || defaultPhone,
-          role: d.role || "student"
+          role: d.role || "student",
+          preferredBranch: d.preferredBranch || null,
+          preferredCategory: d.preferredCategory || null,
+          preferredDistrict: d.preferredDistrict || null
         };
       }
     } catch (err) {
@@ -1051,4 +1072,26 @@ export const getUserProfile = async (uid, defaultPhone) => {
   // Fallback to local DB search
   const usersList = await getUsers();
   return usersList.find(u => u.uid === uid || u.id === uid || u.phoneNumber === defaultPhone || u.phone === defaultPhone);
+};
+
+/** Save a lead (action event) to Firestore leads collection */
+export const saveLead = async ({ userId, university, action }) => {
+  if (isFirebaseConfigured()) {
+    try {
+      await addDoc(collection(fbDb, "leads"), {
+        userId: userId || "guest",
+        university: university || "",
+        action: action || "Unknown",
+        timestamp: new Date().toISOString(),
+        status: "New"
+      });
+      return;
+    } catch (err) {
+      console.warn("Firestore saveLead failed", err);
+    }
+  }
+  // Local fallback
+  const leads = JSON.parse(localStorage.getItem("eapcet_leads") || "[]");
+  leads.push({ userId: userId || "guest", university, action, timestamp: new Date().toISOString(), status: "New" });
+  localStorage.setItem("eapcet_leads", JSON.stringify(leads));
 };

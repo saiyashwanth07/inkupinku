@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./views/Home";
@@ -6,7 +6,6 @@ import Dashboard from "./views/Dashboard";
 import AdminPanel from "./views/AdminPanel";
 import RequestModal from "./components/RequestModal";
 import HelpWidget from "./components/HelpWidget";
-import LoadingScreen from "./components/LoadingScreen";
 import AuthModal from "./components/AuthModal";
 import { 
   initializeDB, 
@@ -15,11 +14,51 @@ import {
   getPredictionHistorySync, 
   savePredictionToHistorySync,
   getUsers,
-  saveUsers
+  saveUsers,
+  updateLastLogin
 } from "./utils/db";
 import { auth as fbAuth, isFirebaseConfigured } from "./utils/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import "./App.css";
+
+// ─── Toast Component ──────────────────────────────────────────────────────────
+function Toast({ message, onDismiss }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 4000);
+    return () => clearTimeout(t);
+  }, [onDismiss]);
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: "76px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      zIndex: 9999,
+      background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+      color: "white",
+      padding: "12px 24px",
+      borderRadius: "50px",
+      boxShadow: "0 8px 32px rgba(37,99,235,0.35)",
+      fontSize: "0.88rem",
+      fontWeight: "600",
+      fontFamily: "'Inter', sans-serif",
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+      animation: "fadeUp 0.3s ease",
+      whiteSpace: "nowrap"
+    }}>
+      <span style={{ fontSize: "1.1rem" }}>🔓</span>
+      {message}
+      <button
+        onClick={onDismiss}
+        style={{ background: "none", border: "none", color: "rgba(255,255,255,0.7)", cursor: "pointer", fontSize: "1rem", lineHeight: 1, marginLeft: "4px" }}
+      >×</button>
+    </div>
+  );
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -32,6 +71,9 @@ export default function App() {
   const [requestCollege, setRequestCollege] = useState(null);
   const [requestBranch, setRequestBranch] = useState("");
 
+  // Toast
+  const [toastMessage, setToastMessage] = useState(null);
+
   // Favorites state
   const [favorites, setFavorites] = useState([]);
   
@@ -41,12 +83,19 @@ export default function App() {
   // Rerun hook query data
   const [rerunQuery, setRerunQuery] = useState(null);
 
+  // Load user-specific data using UID (no fake email needed)
+  const loadUserData = useCallback(async (uid) => {
+    const favs = await getFavoritesSync(uid || "guest");
+    setFavorites(favs);
+    const hist = await getPredictionHistorySync(uid || "guest");
+    setPredictionHistory(hist);
+  }, []);
+
   // Initialize DB and bind Auth observer
   useEffect(() => {
     initializeDB();
     let unsubscribe = null;
     
-    // Check if Firebase Auth is active
     if (isFirebaseConfigured() && fbAuth) {
       unsubscribe = onAuthStateChanged(fbAuth, async (fbUser) => {
         if (fbUser) {
@@ -55,25 +104,25 @@ export default function App() {
           let activeUser = usersList.find(u => u.uid === fbUser.uid || u.id === fbUser.uid);
           
           if (!activeUser) {
-            const formattedMobile = fbUser.phoneNumber;
-            const isFirstAdmin = formattedMobile === "+919999999999" || formattedMobile === "+917997166666";
+            const isAdmin = fbUser.phoneNumber === "+919999999999" || fbUser.phoneNumber === "+917997166666";
             activeUser = {
               uid: fbUser.uid,
               id: fbUser.uid,
-              name: "EAPCET Candidate",
+              name: isAdmin ? "System Administrator" : "Student",
               phoneNumber: fbUser.phoneNumber,
-              email: isFirstAdmin ? "admin@eapcet.com" : `student_${fbUser.phoneNumber.replace(/\D/g, "").slice(-10)}@admissionindia.in`,
-              role: isFirstAdmin ? "admin" : "student"
+              role: isAdmin ? "admin" : "student"
             };
             usersList.push(activeUser);
             await saveUsers(usersList);
+          } else {
+            // Update lastLogin on every session restore
+            await updateLastLogin(fbUser.uid);
           }
           
           setUser(activeUser);
           localStorage.setItem("eapcet_current_user", JSON.stringify(activeUser));
-          await loadUserData(activeUser.email);
+          await loadUserData(fbUser.uid);
         } else {
-          // User is signed out in Firebase Auth
           setUser(null);
           localStorage.removeItem("eapcet_current_user");
           await loadUserData("guest");
@@ -85,39 +134,36 @@ export default function App() {
       if (savedUser) {
         const parsedUser = JSON.parse(savedUser);
         setUser(parsedUser);
-        loadUserData(parsedUser.email);
+        loadUserData(parsedUser.uid || parsedUser.id || "guest");
       } else {
         loadUserData("guest");
       }
     }
 
-    // Remove loading latency
     setIsAppLoading(false);
 
     return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, []);
-
-  // Load user specific data asynchronously
-  const loadUserData = async (email) => {
-    const favs = await getFavoritesSync(email);
-    setFavorites(favs);
-    const hist = await getPredictionHistorySync(email);
-    setPredictionHistory(hist);
-  };
+  }, [loadUserData]);
 
   // Auth actions
   const handleLoginSuccess = async (loggedInUser) => {
     setUser(loggedInUser);
     localStorage.setItem("eapcet_current_user", JSON.stringify(loggedInUser));
-    await loadUserData(loggedInUser.email);
+    await loadUserData(loggedInUser.uid || loggedInUser.id || "guest");
     
-    // Redirect role views
+    // Always return to predictor (admin → admin panel is the only exception)
     if (loggedInUser.role === "admin") {
       setCurrentView("admin");
     } else {
       setCurrentView("home");
+      // Show unlock toast
+      const name = loggedInUser.name && loggedInUser.name !== "Student" ? loggedInUser.name.split(" ")[0] : "";
+      setToastMessage(name
+        ? `Welcome back, ${name}! Your complete college list has been unlocked.`
+        : "Welcome back! Your complete college list has been unlocked."
+      );
     }
   };
 
@@ -136,9 +182,9 @@ export default function App() {
     }
   };
 
-  // Favorites Toggle Action
+  // Favorites Toggle Action (uid-keyed)
   const handleFavoriteToggle = async (collegeId) => {
-    const email = user ? user.email : "guest";
+    const uid = user ? (user.uid || user.id || "guest") : "guest";
     let updatedFavs = [];
 
     if (favorites.includes(collegeId)) {
@@ -148,19 +194,18 @@ export default function App() {
     }
 
     setFavorites(updatedFavs);
-    await saveFavoritesSync(email, updatedFavs);
+    await saveFavoritesSync(uid, updatedFavs);
   };
 
-  // Save prediction query to logs
+  // Save prediction query to logs (uid-keyed)
   const savePredictionToHistory = async (queryItem) => {
-    const email = user ? user.email : "guest";
-    const updatedHistory = [queryItem, ...predictionHistory].slice(0, 20); // Keep top 20
-    
+    const uid = user ? (user.uid || user.id || "guest") : "guest";
+    const updatedHistory = [queryItem, ...predictionHistory].slice(0, 20);
     setPredictionHistory(updatedHistory);
-    await savePredictionToHistorySync(email, queryItem);
+    await savePredictionToHistorySync(uid, queryItem);
   };
 
-  // Details request modal triggers (Talk to an Expert / Get Admission Guidance)
+  // Details request modal triggers
   const handleRequestDetails = (college, branchName = "") => {
     setRequestCollege(college);
     setRequestBranch(branchName);
@@ -171,8 +216,6 @@ export default function App() {
   const handleRerunPrediction = (histItem) => {
     setRerunQuery(histItem);
     setCurrentView("home");
-    
-    // Scroll to form inputs
     setTimeout(() => {
       document.getElementById("predictor-form")?.scrollIntoView({ behavior: "smooth" });
     }, 100);
@@ -180,75 +223,78 @@ export default function App() {
 
   return (
     <>
-      {isAppLoading && <LoadingScreen />}
-      
+      {/* Welcome unlock toast */}
+      {toastMessage && (
+        <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
+      )}
+
       <div className={`app-container ${isAppLoading ? "hidden" : ""}`}>
-      <Navbar
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        user={user}
-        onLoginClick={() => setShowAuth(true)}
-        onLogout={handleLogout}
-      />
+        <Navbar
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          user={user}
+          onLoginClick={() => setShowAuth(true)}
+          onLogout={handleLogout}
+        />
 
-      {/* Main screens routing */}
-      <main className="main-content">
-        {currentView === "home" && (
-          <Home
+        {/* Main screens routing */}
+        <main className="main-content">
+          {currentView === "home" && (
+            <Home
+              user={user}
+              onAuthClick={() => setShowAuth(true)}
+              favorites={favorites}
+              onFavoriteToggle={handleFavoriteToggle}
+              onRequestDetails={handleRequestDetails}
+              savePredictionToHistory={savePredictionToHistory}
+              rerunQuery={rerunQuery}
+              onClearRerun={() => setRerunQuery(null)}
+            />
+          )}
+
+          {currentView === "dashboard" && user && (
+            <Dashboard
+              user={user}
+              favorites={favorites}
+              predictionHistory={predictionHistory}
+              onFavoriteToggle={handleFavoriteToggle}
+              onRequestDetails={handleRequestDetails}
+              onRerunPrediction={handleRerunPrediction}
+            />
+          )}
+
+          {currentView === "admin" && user && user.role === "admin" && (
+            <AdminPanel />
+          )}
+        </main>
+
+        {/* Footer */}
+        <Footer onViewChange={setCurrentView} />
+
+        {/* Counseling Lead Modal */}
+        {showRequest && requestCollege && (
+          <RequestModal
+            college={requestCollege}
+            branchName={requestBranch}
             user={user}
-            onAuthClick={() => setShowAuth(true)}
-            favorites={favorites}
-            onFavoriteToggle={handleFavoriteToggle}
-            onRequestDetails={handleRequestDetails}
-            savePredictionToHistory={savePredictionToHistory}
-            // For query rerun prepopulation
-            rerunQuery={rerunQuery}
-            onClearRerun={() => setRerunQuery(null)}
+            onClose={() => {
+              setShowRequest(false);
+              setRequestCollege(null);
+            }}
           />
         )}
 
-        {currentView === "dashboard" && user && (
-          <Dashboard
-            user={user}
-            favorites={favorites}
-            predictionHistory={predictionHistory}
-            onFavoriteToggle={handleFavoriteToggle}
-            onRequestDetails={handleRequestDetails}
-            onRerunPrediction={handleRerunPrediction}
+        {/* Floating help widget */}
+        <HelpWidget />
+
+        {/* Auth Modal */}
+        {showAuth && (
+          <AuthModal 
+            onClose={() => setShowAuth(false)} 
+            onLoginSuccess={handleLoginSuccess} 
           />
         )}
-
-        {currentView === "admin" && user && user.role === "admin" && (
-          <AdminPanel />
-        )}
-      </main>
-
-      {/* Footer information */}
-      <Footer onViewChange={setCurrentView} />
-
-      {/* Counseling Helpline & WhatsApp Leads Modal Form */}
-      {showRequest && requestCollege && (
-        <RequestModal
-          college={requestCollege}
-          branchName={requestBranch}
-          onClose={() => {
-            setShowRequest(false);
-            setRequestCollege(null);
-          }}
-        />
-      )}
-
-      {/* Floating "Need Help?" counselling widget */}
-      <HelpWidget />
-
-      {/* Authentication Modal */}
-      {showAuth && (
-        <AuthModal 
-          onClose={() => setShowAuth(false)} 
-          onLoginSuccess={handleLoginSuccess} 
-        />
-      )}
-    </div>
+      </div>
     </>
   );
 }
