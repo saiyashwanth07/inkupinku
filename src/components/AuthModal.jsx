@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Phone, User, Eye, AlertCircle, ArrowRight, ShieldCheck } from "lucide-react";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth, isFirebaseConfigured } from "../utils/firebase";
-import { getUsers, saveUsers, getUserProfile, checkUserExistsByPhone } from "../utils/db";
+import { getUsers, saveUsers, getUserProfile, checkUserExistsByPhone, saveLead } from "../utils/db";
 
 export default function AuthModal({ onClose, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState("login"); // "login" | "register"
@@ -73,6 +73,19 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
       const userExists = await checkUserExistsByPhone(formattedMobile);
 
       if (activeTab === "login" && !userExists && formattedMobile !== "+917997166666" && formattedMobile !== "+919999999999" && formattedMobile !== "+919848575599") {
+        // Record unregistered login attempt as a lead
+        try {
+          await saveLead({
+            userId: "guest",
+            name: "Not Registered",
+            mobile: formattedMobile,
+            university: "N/A",
+            action: "Failed Login (Unregistered)"
+          });
+        } catch (leadErr) {
+          console.warn("Failed to log unregistered login attempt:", leadErr);
+        }
+
         setAuthError("Mobile number is not registered. Please create an account first.");
         setIsLoading(false);
         return;
