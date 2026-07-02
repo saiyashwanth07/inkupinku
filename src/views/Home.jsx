@@ -214,6 +214,7 @@ export default function Home({
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasPredicted, setHasPredicted] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(7);
 
   // Mobile Bottom Sheet state
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
@@ -331,9 +332,9 @@ export default function Home({
     }
     setFormErrors({});
     setIsLoading(true);
+    setVisibleCount(7);
 
-    // Simulate EAPCET DB search latency
-    setTimeout(async () => {
+    try {
       let rank = Number(inputValue);
       if (inputType === "marks") {
         rank = estimateRankFromMarks(rank);
@@ -383,8 +384,11 @@ export default function Home({
       // Scroll to results
       setTimeout(() => {
         document.getElementById("prediction-results")?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    }, 800);
+      }, 50);
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
   };
 
   const estimateRankFromMarks = (m) => {
@@ -400,15 +404,22 @@ export default function Home({
 
   const handleReset = () => {
     setInputValue("");
-    setHasPredicted(false);
-    setRawResults([]);
-    setProfileRecs([]);
+    setCategory("OC");
+    setGender("Boys");
+    setLocalArea("AU");
+    setPreferredBranch("All Branches");
     setSearchTerm("");
     setSelectedDistrict("All Districts");
     setSelectedBranch("All Branches");
     setSelectedType("All");
     setSelectedChance("All");
+    setHasPredicted(false);
+    setRawResults([]);
+    setProfileRecs([]);
+    setFormErrors({});
+    setVisibleCount(7);
     setSortBy("lowest_rank");
+    if (onClearRerun) onClearRerun();
   };
 
   const userRank = inputType === "rank" ? (Number(inputValue) || 0) : estimateRankFromMarks(Number(inputValue) || 0);
@@ -480,7 +491,7 @@ export default function Home({
   const filteredResults = getFilteredColleges();
 
   // STRICT GUEST LIMITING RULE: Lock after only 2 colleges displayed!
-  const displayLimit = user ? filteredResults.length : Math.min(2, filteredResults.length);
+  const displayLimit = user ? Math.min(visibleCount, filteredResults.length) : Math.min(2, filteredResults.length);
   const visibleColleges = filteredResults.slice(0, displayLimit);
   const hiddenCount = filteredResults.length - displayLimit;
 
@@ -805,6 +816,20 @@ export default function Home({
                               onClick={onAuthClick}
                             >
                               Sign Up to Unlock
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      if (user && visibleCount < filteredResults.length) {
+                        elements.push(
+                          <div key="load-more" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                            <button
+                              className="btn btn-outline font-poppins"
+                              onClick={() => setVisibleCount(v => v + 7)}
+                              style={{ width: '100%', maxWidth: '300px' }}
+                            >
+                              Load More ({filteredResults.length - visibleCount} remaining)
                             </button>
                           </div>
                         );

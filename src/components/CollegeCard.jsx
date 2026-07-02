@@ -1,5 +1,5 @@
-import React from "react";
-import { Star, MapPin, Award, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Star, MapPin, Award, Check, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function CollegeCard({
   college,
@@ -17,6 +17,23 @@ export default function CollegeCard({
     overallChance,
     eligibleBranches
   } = college;
+
+  const [showBranches, setShowBranches] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setShowBranches(false);
+      } else {
+        setShowBranches(true);
+      }
+    };
+    // Set initial state
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const getChanceBadgeClass = (chance) => {
     switch (chance?.toLowerCase()) {
@@ -81,20 +98,35 @@ export default function CollegeCard({
 
       {/* Eligible Branches & Ranks Section */}
       <div className="card-branches-section">
-        <div className="branches-header-title font-poppins">Eligible Branches & Cutoffs</div>
-        <div className="branches-grid-layout">
-          {eligibleBranches && eligibleBranches.map((eb) => (
-            <div className="branch-tag-modern" key={eb.branch}>
-              <div className="branch-info-col">
-                <span className="branch-code-text font-poppins">{eb.branch}</span>
-                <span className="branch-cutoff-text">Cutoff Rank: <strong>{eb.closingRank.toLocaleString()}</strong></span>
-              </div>
-              <span className={`branch-chance-indicator-modern ${getChanceBadgeClass(eb.chance)}`}>
-                {eb.chance}
-              </span>
-            </div>
-          ))}
+        <div 
+          className="branches-header-title font-poppins" 
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+          onClick={() => window.innerWidth <= 768 && setShowBranches(!showBranches)}
+        >
+          <span>Eligible Branches & Cutoffs ({eligibleBranches?.length || 0})</span>
+          {window.innerWidth <= 768 && (
+            <span style={{ display: 'flex', alignItems: 'center', color: 'var(--primary)' }}>
+              {showBranches ? 'Hide' : 'See Branches'} 
+              {showBranches ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </span>
+          )}
         </div>
+        
+        {showBranches && (
+          <div className="branches-grid-layout">
+            {eligibleBranches && eligibleBranches.map((eb) => (
+              <div className="branch-tag-modern" key={eb.branch}>
+                <div className="branch-info-col">
+                  <span className="branch-code-text font-poppins">{eb.branch}</span>
+                  <span className="branch-cutoff-text">Cutoff Rank: <strong>{eb.closingRank.toLocaleString()}</strong></span>
+                </div>
+                <span className={`branch-chance-indicator-modern ${getChanceBadgeClass(eb.chance)}`}>
+                  {eb.chance}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Action Buttons Section */}

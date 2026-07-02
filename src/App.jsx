@@ -91,10 +91,8 @@ export default function App() {
       }
     }
 
-    // Minimum delay to show the cute loading animation
-    const timer = setTimeout(() => {
-      setIsAppLoading(false);
-    }, 2000);
+    // Remove loading latency
+    setIsAppLoading(false);
 
     return () => {
       if (unsubscribe) unsubscribe();
