@@ -18,22 +18,7 @@ export default function CollegeCard({
     eligibleBranches
   } = college;
 
-  const [showBranches, setShowBranches] = useState(true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setShowBranches(false);
-      } else {
-        setShowBranches(true);
-      }
-    };
-    // Set initial state
-    handleResize();
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const getChanceBadgeClass = (chance) => {
     switch (chance?.toLowerCase()) {
@@ -98,34 +83,45 @@ export default function CollegeCard({
 
       {/* Eligible Branches & Ranks Section */}
       <div className="card-branches-section">
-        <div 
-          className="branches-header-title font-poppins" 
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-          onClick={() => window.innerWidth <= 768 && setShowBranches(!showBranches)}
-        >
+        <div className="branches-header-title font-poppins">
           <span>Eligible Branches & Cutoffs ({eligibleBranches?.length || 0})</span>
-          {window.innerWidth <= 768 && (
-            <span style={{ display: 'flex', alignItems: 'center', color: 'var(--primary)' }}>
-              {showBranches ? 'Hide' : 'See Branches'} 
-              {showBranches ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </span>
-          )}
         </div>
         
-        {showBranches && (
-          <div className="branches-grid-layout">
-            {eligibleBranches && eligibleBranches.map((eb) => (
-              <div className="branch-tag-modern" key={eb.branch}>
-                <div className="branch-info-col">
-                  <span className="branch-code-text font-poppins">{eb.branch}</span>
-                  <span className="branch-cutoff-text">Cutoff Rank: <strong>{eb.closingRank.toLocaleString()}</strong></span>
-                </div>
-                <span className={`branch-chance-indicator-modern ${getChanceBadgeClass(eb.chance)}`}>
-                  {eb.chance}
-                </span>
+        <div className="branches-grid-layout">
+          {eligibleBranches && (isExpanded ? eligibleBranches : eligibleBranches.slice(0, 2)).map((eb) => (
+            <div className="branch-tag-modern" key={eb.branch}>
+              <div className="branch-info-col">
+                <span className="branch-code-text font-poppins">{eb.branch}</span>
+                <span className="branch-cutoff-text">Cutoff Rank: <strong>{eb.closingRank.toLocaleString()}</strong></span>
               </div>
-            ))}
-          </div>
+              <span className={`branch-chance-indicator-modern ${getChanceBadgeClass(eb.chance)}`}>
+                {eb.chance}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {eligibleBranches && eligibleBranches.length > 2 && (
+          <button 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="font-poppins"
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: 'var(--primary)', 
+              fontWeight: '600', 
+              fontSize: '0.8rem', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '4px', 
+              cursor: 'pointer',
+              padding: '8px 0 0 0',
+              marginTop: '4px'
+            }}
+          >
+            {isExpanded ? 'See Less' : `See all branches (+${eligibleBranches.length - 2} more)`}
+            {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
         )}
       </div>
 
