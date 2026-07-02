@@ -96,7 +96,6 @@ export default function App() {
 
     return () => {
       if (unsubscribe) unsubscribe();
-      clearTimeout(timer);
     };
   }, []);
 
