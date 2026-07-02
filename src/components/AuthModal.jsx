@@ -111,18 +111,27 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
 
     // Live Firebase Phone Auth
     try {
-      // Dynamically initialize reCAPTCHA verifier to prevent verifier is not initialized errors
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "invisible",
-          callback: () => {
-            // reCAPTCHA solved
-          },
-          "expired-callback": () => {
-            setAuthError("reCAPTCHA expired. Please try again.");
-          }
-        });
+      // Clear any existing verifier to avoid detached DOM node issues from React StrictMode
+      if (window.recaptchaVerifier) {
+        try {
+          window.recaptchaVerifier.clear();
+        } catch (e) {}
+        window.recaptchaVerifier = null;
       }
+      
+      const container = document.getElementById("recaptcha-container");
+      if (container) container.innerHTML = "";
+
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: () => {
+          // reCAPTCHA solved
+        },
+        "expired-callback": () => {
+          setAuthError("reCAPTCHA expired. Please try again.");
+        }
+      });
+      
       const verifier = window.recaptchaVerifier;
 
       // Proceed directly to send OTP. The backend auth flow will naturally handle existing vs new users securely.

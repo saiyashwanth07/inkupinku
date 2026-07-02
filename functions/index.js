@@ -25,7 +25,7 @@ exports.processNewLead = onDocumentCreated(
     document: "leads/{leadId}",
     secrets: [googleServiceAccountKey, smtpPassword],
     // Optional: Configure region and memory based on needs
-    region: "us-central1",
+    region: "asia-south1",
     memory: "256MiB"
   },
   async (event) => {
