@@ -4,10 +4,14 @@ import {
   collection, addDoc, getDocs, doc, getDoc, setDoc, query, where, orderBy, deleteDoc 
 } from "firebase/firestore";
 
-import collegeData from "../data/colleges.json";
+let cachedColleges = null;
 
-export const getDefaultColleges = () => {
-  return collegeData.map(col => {
+export const getDefaultColleges = async () => {
+  if (cachedColleges) return cachedColleges;
+  try {
+    const response = await fetch('/colleges.json');
+    const collegeData = await response.json();
+    cachedColleges = collegeData.map(col => {
     // Flatten the branches and cutoffs into the format expected by the app
     const cutoffs = [];
     if (col.branches) {
@@ -67,6 +71,11 @@ export const getDefaultColleges = () => {
       cutoffs: cutoffs
     };
   });
+  return cachedColleges;
+  } catch (error) {
+    console.error("Failed to fetch colleges.json:", error);
+    return [];
+  }
 };
 
 // 24 Featured Universities in India
@@ -423,7 +432,7 @@ export const seedSupabaseDB = async () => {
     console.log("Seeding Database...");
 
     // Seed Colleges
-    const collegesToInsert = getDefaultColleges().map(c => {
+    const collegesToInsert = (await getDefaultColleges()).map(c => {
       const { cutoffs, ...col } = c;
       return {
         id: col.id,
@@ -446,7 +455,8 @@ export const seedSupabaseDB = async () => {
 
     // Seed Cutoffs (Chunked insertion because there are ~6000 items)
     const cutoffsToInsert = [];
-    getDefaultColleges().forEach(col => {
+    const defaultColleges = await getDefaultColleges();
+    defaultColleges.forEach(col => {
       col.cutoffs.forEach(cut => {
         cutoffsToInsert.push({
           college_id: col.id,
@@ -578,7 +588,7 @@ export const getColleges = async () => {
 
   initializeDB();
   // Return from memory directly instead of localStorage to avoid quota crash
-  return getDefaultColleges();
+  return await getDefaultColleges();
 };
 
 export const saveColleges = async (colleges) => {
