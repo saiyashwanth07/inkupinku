@@ -876,11 +876,6 @@ export default function Home({
         )}
       </section>
 
-      {/* ============================================================
-          SEO / AEO / GEO CONTENT SECTIONS
-          Semantic HTML for search engines, AI crawlers & featured snippets
-          ============================================================ */}
-
       {/* About Section */}
       <section className="container" style={{ marginBottom: '56px', marginTop: '8px' }} aria-label="About AP EAPCET College Predictor">
         <div style={{
@@ -891,10 +886,10 @@ export default function Home({
           boxShadow: 'var(--shadow-sm)'
         }}>
           <h2 className="font-poppins" style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '12px' }}>
-            AP EAPCET College Predictor 2025 – How It Works
+            AP EAPCET College Predictor 2026 – How It Works
           </h2>
           <p style={{ color: 'var(--text-secondary)', lineHeight: '1.75', marginBottom: '16px', fontSize: '0.92rem' }}>
-            The <strong>AP EAPCET College Predictor</strong> is a free tool designed for Andhra Pradesh engineering aspirants. It uses official <strong>AP EAPCET 2024 closing rank data</strong> to predict which colleges you can get admission to based on your rank, category, gender, and local area zone.
+            The <strong>AP EAPCET College Predictor</strong> is a free tool designed for Andhra Pradesh engineering aspirants. It uses official <strong>AP EAPCET 2025 closing rank data</strong> to predict which colleges you can get admission to based on your rank, category, gender, and local area zone.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
             {[
@@ -915,7 +910,7 @@ export default function Home({
       {/* FAQ Section – AEO (Answer Engine Optimization) */}
       <section className="container" style={{ marginBottom: '72px' }} aria-label="Frequently Asked Questions about AP EAPCET">
         <h2 className="font-poppins" style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>
-          Frequently Asked Questions – AP EAPCET 2025
+          Frequently Asked Questions – AP EAPCET 2026
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[
@@ -925,7 +920,7 @@ export default function Home({
             },
             {
               q: 'How accurate is this AP EAPCET college predictor?',
-              a: 'This predictor is based on official AP EAPCET 2024 final phase closing rank data from APSCHE. Predictions are highly accurate for most colleges but actual cutoffs may vary by ±500–2,000 ranks per year depending on the number of applicants and seat availability. Always use it as a reference and verify on the official APSCHE website.'
+              a: 'This predictor is based on official AP EAPCET 2025 final phase closing rank data from APSCHE. Predictions are highly accurate for most colleges but actual cutoffs may vary by ±500–2,000 ranks per year depending on the number of applicants and seat availability. Always use it as a reference and verify on the official APSCHE website.'
             },
             {
               q: 'What does AU zone, SVU zone, and OU zone mean?',
