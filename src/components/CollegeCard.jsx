@@ -19,6 +19,16 @@ export default function CollegeCard({
   } = college;
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const getChanceBadgeClass = (chance) => {
     switch (chance?.toLowerCase()) {
@@ -88,7 +98,7 @@ export default function CollegeCard({
         </div>
         
         <div className="branches-grid-layout">
-          {eligibleBranches && (isExpanded ? eligibleBranches : eligibleBranches.slice(0, 2)).map((eb) => (
+          {eligibleBranches && (isExpanded ? eligibleBranches : eligibleBranches.slice(0, isMobile ? 0 : 2)).map((eb) => (
             <div className="branch-tag-modern" key={eb.branch}>
               <div className="branch-info-col">
                 <span className="branch-code-text font-poppins">{eb.branch}</span>
@@ -101,7 +111,7 @@ export default function CollegeCard({
           ))}
         </div>
 
-        {eligibleBranches && eligibleBranches.length > 2 && (
+        {eligibleBranches && (isMobile ? eligibleBranches.length > 0 : eligibleBranches.length > 2) && (
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
             className="font-poppins"
@@ -119,7 +129,9 @@ export default function CollegeCard({
               marginTop: '4px'
             }}
           >
-            {isExpanded ? 'See Less' : `See all branches (+${eligibleBranches.length - 2} more)`}
+            {isMobile 
+              ? (isExpanded ? 'Hide Eligible Branches' : 'See Eligible Branches') 
+              : (isExpanded ? 'See Less' : `See all branches (+${eligibleBranches.length - 2} more)`)}
             {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
         )}
