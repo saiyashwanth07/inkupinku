@@ -242,6 +242,19 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
         };
         usersList.push(activeUser);
         await saveUsers(usersList);
+
+        // Also save as a new lead so it goes to Google Sheets!
+        try {
+          await saveLead({
+            userId: fbUser.uid,
+            name: activeUser.name,
+            mobile: activeUser.phoneNumber,
+            university: "Platform Sign Up",
+            action: "Account Creation"
+          });
+        } catch (e) {
+          console.warn("Failed to save sign-up as lead:", e);
+        }
       }
 
       onLoginSuccess(activeUser);
