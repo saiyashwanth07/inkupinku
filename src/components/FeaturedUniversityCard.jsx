@@ -80,6 +80,13 @@ export default function FeaturedUniversityCard({ rank, branch, startIndex = 0 })
   const [showModal, setShowModal] = useState(false);
   const timerRef = useRef(null);
 
+  // Reset index when branch changes so we immediately show the newly promoted partner
+  useEffect(() => {
+    if (list.length > 0) {
+      setCurrentIndex(startIndex % list.length);
+    }
+  }, [branch, startIndex, list.length]);
+
   const activeUni = list[currentIndex] || list[0];
 
   useEffect(() => {
