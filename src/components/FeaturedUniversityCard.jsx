@@ -38,23 +38,19 @@ export default function FeaturedUniversityCard({ rank, branch, startIndex = 0 })
         // GANPAT on top, Aditya secondary
         const ganpat = list.find(u => u.id === "ganpat");
         const aditya = list.find(u => u.id === "aditya");
-        const others = list.filter(u => u.id !== "ganpat" && u.id !== "aditya");
-        return [ganpat, aditya, ...others].filter(Boolean);
+        return [ganpat, aditya].filter(Boolean);
       } else if (b.includes("ece") || b.includes("electronics & communication")) {
-        // Manav Rachna on top
+        // Manav Rachna exclusively
         const mru = list.find(u => u.id === "manavrachna");
-        const others = list.filter(u => u.id !== "manavrachna");
-        return [mru, ...others].filter(Boolean);
+        return [mru].filter(Boolean);
       } else if (b.includes("ai") || b.includes("machine learning") || b.includes("mech") || b.includes("mechanical")) {
-        // Bharath Univ on top
+        // Bharath Univ exclusively
         const bharath = list.find(u => u.id === "bharath");
-        const others = list.filter(u => u.id !== "bharath");
-        return [bharath, ...others].filter(Boolean);
+        return [bharath].filter(Boolean);
       } else if (b.includes("data science") || b.includes("csm")) {
-        // Aditya on top
+        // Aditya exclusively
         const aditya = list.find(u => u.id === "aditya");
-        const others = list.filter(u => u.id !== "aditya");
-        return [aditya, ...others].filter(Boolean);
+        return [aditya].filter(Boolean);
       }
     }
 
